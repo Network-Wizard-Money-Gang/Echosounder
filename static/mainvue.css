@@ -41,6 +41,10 @@
   --height-header: 4vh; /* var(--height-header) */
 }
 
+html {
+  overflow-y: hidden;
+}
+
 html[data-theme='whiteblue'] {
   --background-general: #f8f8f8; /* var(--background-general) */
   --background-default: #ebebeb; /* var(--background-default) */
@@ -116,6 +120,11 @@ html[data-theme='whitedebug'] {
 };
 
 /* configuration spécifique */
+
+/* v-hide-panel augmenté car il existe une propriété display de d-flex mise en important */
+.v-hide-panel {
+  display: none !important; 
+}
 
 .ng-hide:not(.ng-hide-animate) {
   /* overriding pour cacher les mécanismes d'animations ngAnimate de base qui sont foireux */
@@ -199,6 +208,11 @@ header > center > div > img{
   opacity: 0;
 }
 
+.echo_menu_top.v-hide {
+  top: -400px;
+  opacity: 0;
+}
+
 .echo_menu_top_onglets {
   width: 100%;
   border-bottom-style: solid;
@@ -264,12 +278,9 @@ header > center > div > img{
   transition: all linear 0.5s;
 }
 
-.echo_menu_left.ng-hide {
+.echo_menu_left.v-hide {
   left: -400px;
   opacity: 0;
-}
-
-.echo_menu_left.ng-hide-add, .echo_menu_left.ng-hide-remove {
 }
 
 .echo_scan_cible {
@@ -418,7 +429,7 @@ header > center > div > img{
   transition: all linear 0.5s;
 }
 
-.echo_menu_right.ng-hide {
+.echo_menu_right.v-hide {
   right: -400px;
   opacity: 0;
 }
