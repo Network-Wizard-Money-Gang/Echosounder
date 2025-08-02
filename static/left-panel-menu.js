@@ -45,5 +45,19 @@ export default Vue.createApp({
       mitt.emitter.emit('scan_local', {type : 'request_traceroute_cidr_scan', cible : this.cible});
     },
     // fonction de scan machines
+
+    // fonctions de scan de placement étendue (global)
+    clickTracerouteLocal : function() {
+      console.log("emit local traceroute scan request");
+      mitt.emitter.emit('scan_general', {type : 'request_traceroute_local_scan'});
+    },
+    clickTracerouteGlobal : function() {
+      console.log("emit global traceroute scan request");
+      mitt.emitter.emit('scan_general', {type : 'request_traceroute_global_scan'});
+    },
+    clickResolveAS : function() {
+      console.log("emit global traceroute scan request");
+      mitt.emitter.emit('scan_general', {type : 'request_resolve_as_scan'});
+    },
   },
 })

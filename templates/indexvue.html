@@ -92,8 +92,8 @@
         <div class="container echo_menu_title">Scan réseau local</div>
         <!-- scan sans cible (level 2) -->
         <div class="container echo_scan_panel">
-          <div class="echo_button_scan hvr-hollow" ng-click="clickScanARP()">Scan ARP</div>
-          <div class="echo_button_scan hvr-hollow" ng-click="clickFastPing()">Scan Ping</div>
+          <div class="echo_button_scan hvr-hollow" @click="clickScanARP()">Scan ARP</div>
+          <div class="echo_button_scan hvr-hollow" @click="clickFastPing()">Scan Ping</div>
         </div>
         <br>
         <div class="container echo_menu_subtitle"></div>
@@ -106,8 +106,8 @@
         </div>
         <!-- Type de scan CIDR sur cible -->
         <div class="container echo_scan_panel">
-          <div class="echo_button_scan hvr-hollow" ng-click="clickScanDHCP()">Scan DHCP</div>
-          <div class="echo_button_scan hvr-hollow" ng-click="clickScanCIDRTraceroute()">Scan traceroute</div>
+          <div class="echo_button_scan hvr-hollow" @click="clickScanDHCP()">Scan DHCP</div>
+          <div class="echo_button_scan hvr-hollow" @click="clickScanCIDRTraceroute()">Scan traceroute</div>
         </div>
       </div>
       <!-- menu de scan machine -->
@@ -156,9 +156,9 @@
       </div>
       <div class="d-flex flex-wrap echo_menu_left" v-bind:class="{'v-hide' : !showMenu3}">
         <div class="container echo_menu_title">Scan spécifiques</div>
-        <div class="echo_button_scan hvr-hollow" ng-click="clickTracerouteLocal()">Scan traceroute -> réseau locaux</div>
-        <div class="echo_button_scan hvr-hollow" ng-click="clickTraceroute()">Scan traceroute -> internet</div>
-        <div class="echo_button_scan hvr-hollow" ng-click="clickResolveAS()">Scan AS ID -> Name</div>
+        <div class="echo_button_scan hvr-hollow" @click="clickTracerouteLocal()">Scan traceroute -> réseau locaux</div>
+        <div class="echo_button_scan hvr-hollow" @click="clickTracerouteGlobal()">Scan traceroute -> internet</div>
+        <div class="echo_button_scan hvr-hollow" @click="clickResolveAS()">Scan AS ID -> Name</div>
       </div>
     </div>
 

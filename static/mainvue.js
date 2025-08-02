@@ -98,8 +98,6 @@ const app = Vue.createApp({
         url: '/json/interfaces',
       })
       .then((response) => {
-        console.log(response);
-
         mitt.emitter.emit('notification_info', "récupération list interfaces");
         mitt.emitter.emit('toppanelmenu_health', ['interfaces', 'true']);
         mitt.emitter.emit('toppanelmenu_interfaces', response.data);
@@ -145,5 +143,10 @@ mitt.emitter.on('toppanelmenu_addressfamily', (addressfamilydata) => topPanelMen
 // fonction de mise à jour de cible pour leftPanelMenu
 mitt.emitter.on('leftpanelmenu_cible', (cible) => leftPanelMenuApp.addOrUpdateCible(cible));
 
+// fonctions d'envoie des demandes de scans au graph
+mitt.emitter.on('scan_local', (scanobj) => graphNetworkApp.receiveEmitRequestLocalScan(scanobj));
+mitt.emitter.on('scan_general', (scanobj) => graphNetworkApp.receiveEmitRequestGeneralScan(scanobj));
+
+
 // fonction de mise à jour du thème graphique pour cytoscape
-mitt.emitter.on('reloadStyle', (theme) => graphNetworkApp.updateTheme(theme));
+mitt.emitter.on('reloadStyle', (theme) => graphNetworkApp.loadStyle());
