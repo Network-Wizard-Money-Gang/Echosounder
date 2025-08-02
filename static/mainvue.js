@@ -20,7 +20,6 @@ const app = Vue.createApp({
 	  return {
         // ici on ajoute les variables manipulables de la page
         address_family: {},
-        interfaces : {},
         cyto : {},
 	  }
 	},
@@ -32,7 +31,6 @@ const app = Vue.createApp({
         url: '/json/health',
       })
       .then((response) => {
-        console.log(response);
         mitt.emitter.emit('notification_info', "API fonctionnelle");
         this.getHealthNmap();
         this.getHealthModules();
@@ -43,6 +41,7 @@ const app = Vue.createApp({
       .catch(function (error) {
         // handle error
         console.log(error);
+        mitt.emitter.emit('notification_error', "API health : " + error);
         mitt.emitter.emit('toppanelmenu_health', ['status', 'error']);
       });
     },
@@ -53,13 +52,12 @@ const app = Vue.createApp({
         url: '/json/health/nmap',
       })
       .then((response) => {
-        console.log(response);
-        this.health['nmap'] = response.data.nmap;
-        mitt.emitter.emit('toppanelmenu_health', ['nmap', 'true']);
+        mitt.emitter.emit('toppanelmenu_health', ['nmap', response.data.nmap]);
       })
       .catch(function (error) {
         // TODO envoyer en toast une erreur personnalisé nmap
         console.log(error);
+        mitt.emitter.emit('notification_error', "API nmap : " + error);
         mitt.emitter.emit('toppanelmenu_health', ['nmap', 'false']);
       });
     },
@@ -70,13 +68,11 @@ const app = Vue.createApp({
         url: '/json/health/dependencies',
       })
       .then((response) => {
-        console.log(response);
-        this.health['dependencies'] = response.data.dependencies;
         mitt.emitter.emit('toppanelmenu_health', ['dependencies', response.data.dependencies]);
       })
       .catch(function (error) {
         // handle error
-        console.log(error);
+        mitt.emitter.emit('notification_error', "API dependencies : " + error);
         mitt.emitter.emit('toppanelmenu_health', ['dependencies', 'error']);
       });
     },
@@ -87,11 +83,11 @@ const app = Vue.createApp({
         url: '/json/address_family',
       })
       .then((response) => {
-        console.log(response);
-        this.address_family = response.data;
+        mitt.emitter.emit('toppanelmenu_addressfamily', response.data);
       })
       .catch(function (error) {
         // handle error
+        mitt.emitter.emit('notification_error', "API adressfamily : " + error);
         console.log(error);
       });
     },
@@ -103,13 +99,15 @@ const app = Vue.createApp({
       })
       .then((response) => {
         console.log(response);
-        this.interfaces = response.data;
+
         mitt.emitter.emit('notification_info', "récupération list interfaces");
         mitt.emitter.emit('toppanelmenu_health', ['interfaces', 'true']);
+        mitt.emitter.emit('toppanelmenu_interfaces', response.data);
       })
       .catch(function (error) {
         // handle error
         console.log(error);
+        mitt.emitter.emit('notification_error', "API interface : " + error);
         mitt.emitter.emit('toppanelmenu_health', ['interfaces', 'false']);
       });
     },
@@ -132,8 +130,20 @@ const rightPanelMenuApp = rightPanelMenu.mount('#echo_panel_right');
 const notificationPanelMenuApp = notificationPanelMenu.mount('#echo_panel_notification');
 const graphNetworkApp = graphNetwork.mount('#placeNetwork');
 
-console.log(notificationPanelMenuApp);
-
 mitt.emitter.on('parent', (texte) => EchoSounderApp.print_event(texte));
+mitt.emitter.on('check_health', () => EchoSounderApp.getHealth());
+
+// events de notification en bas à droite
 mitt.emitter.on('notification_info', (toast) => notificationPanelMenuApp.infoToast(toast));
+mitt.emitter.on('notification_error', (toast) => notificationPanelMenuApp.errorToast(toast));
+
+// events de mise à jour des info du menu haut à partir de getHealth
 mitt.emitter.on('toppanelmenu_health', (keyvalue) => topPanelMenuApp.addOrUpdateHealtValue(keyvalue));
+mitt.emitter.on('toppanelmenu_interfaces', (interfacedata) => topPanelMenuApp.updateInterfaces(interfacedata));
+mitt.emitter.on('toppanelmenu_addressfamily', (addressfamilydata) => topPanelMenuApp.updateAddrFamily(addressfamilydata));
+
+// fonction de mise à jour de cible pour leftPanelMenu
+mitt.emitter.on('leftpanelmenu_cible', (cible) => leftPanelMenuApp.addOrUpdateCible(cible));
+
+// fonction de mise à jour du thème graphique pour cytoscape
+mitt.emitter.on('reloadStyle', (theme) => graphNetworkApp.updateTheme(theme));

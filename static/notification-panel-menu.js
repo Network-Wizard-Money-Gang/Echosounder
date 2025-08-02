@@ -14,6 +14,20 @@ export default Vue.createApp({
         listToast: [],
 	  }
 	},
+  watch : {
+    listToast : {
+      handler : function(newListToast, oldListToast) {
+        console.log(newListToast);
+        if(newListToast.length == 0) {
+          // on ne fait rien
+        }else {
+          // place un delay de 3 secondes plus on efface le premier élément de la liste
+          setTimeout(() => { this.listToast = this.listToast.slice(1);}, 7000);
+        }
+      }, 
+      deep : true,
+    }
+  },
 	methods: {
     // fonctions d'insertion de nouveau Toast dans la liste 
     infoToast: function(toastData) {
@@ -22,7 +36,13 @@ export default Vue.createApp({
         'texte' : toastData,
         'className' : 'echo_toast_info',
       });
-      console.log(this.listToast);
+    },
+    errorToast: function(toastData) {
+      this.listToast.push({
+        'titre' : 'error', 
+        'texte' : toastData,
+        'className' : 'echo_toast_error',
+      });
     }
   },
 })

@@ -52,18 +52,18 @@
           </div>
           <!-- règlages réseau -->
           <div class="d-flex flex-column" v-if="menuConfNetwork">
-            <select class="form-select echo_menu_top_option_interface" ng-model="interface" ng-change="getInterfaceData()">
+            <select class="form-select echo_menu_top_option_interface"  v-model="interface" @change="getInterfaceData()">
               <option disabled selected value> -- choisissez une interface -- </option>
-              <option ng-repeat="interfaceF in interfaces" value="{{'{{interfaceF}}'}}">{{'{{interfaceF}}'}}</option>
+              <option v-for="interfaceF in interfaces" :value="interfaceF">{{'{{interfaceF}}'}}</option>
             </select>
             <br>
             <br>
             <pre>{{"{{interfaceData}}"}}</pre>
             <br>
-            <div ng-hide="listInterfaceIP.length == 0">
-              <select class="form-select echo_menu_top_option_interface" ng-model="jsonIP" ng-change="jsonInterfaceToIPCIDR()">
+            <div v-if="!(listInterfaceIP.length == 0)">
+              <select class="form-select echo_menu_top_option_interface" v-model="jsonIP" @change="jsonInterfaceToIPCIDR()">
                 <option disabled selected value> -- choisissez une IP -- </option>
-                <option ng-repeat="interfaceIP in listInterfaceIP" value="{{'{{interfaceIP}}'}}">{{'{{interfaceIP}}'}}</option>
+                <option v-for="interfaceIP in listInterfaceIP" :value="interfaceIP">{{'{{interfaceIP}}'}}</option>
               </select>
             </div>
           </div>
@@ -72,9 +72,9 @@
             <div>paramètres de thème : </div>
             <br>
             <br>
-            <select class="form-select echo_menu_top_option_interface" ng-model="themeSelected" ng-change="changeTheme(themeSelected)">
+            <select class="form-select echo_menu_top_option_interface" v-model="themeSelected" @change="changeTheme(themeSelected)">
               <option disabled selected value> -- choisissez un thème -- </option>
-              <option ng-repeat="theme in themes" value="{{'{{theme}}'}}">{{'{{theme}}'}}</option>
+              <option v-for="theme in themes" :value="theme">{{'{{theme}}'}}</option>
             </select>
           </div>
         </div>
@@ -101,7 +101,7 @@
         <!-- cible à scanner -->
         <div class="container echo_menu_title">Scan réseau CIDR</div>
         <div class="container echo_scan_cible">
-          <input class="echo_input_effect" type="text" name="cible_ip_cidr" placeholder="cidr" ng-model="cible" required>
+          <input class="echo_input_effect" type="text" name="cible_ip_cidr" placeholder="cidr" v-model="cible" required>
           <label for="name" class="echo_input_effect_label">IP/CIDR</label>
         </div>
         <!-- Type de scan CIDR sur cible -->
@@ -166,20 +166,18 @@
     <div id="echo_panel_right" class="echo_panel_right" ng-controller="rightPanelMenu">
       <!-- menu de visualisation data node -->
       <div class="echo_panel_openbutton echo_panel_openbutton_right hvr-sweep-to-left menu_btn_right_1" 
-        ng-click="showMenu1 = !showMenu1; showMenu2 = false; showMenu3 = false" 
         @click="() => {showMenu1 = !showMenu1; showMenu2 = false; showMenu3 = false}">
       </div>
-      <div class="d-flex flex-wrap echo_menu_right echo_node_data" v-bind:class="{'v-hide' : !showMenu1}">
+      <div class="d-flex flex-wrap echo_menu_right echo_node_data" v-bind:class="{'v-hide' : !showMenu1, 'v-hide-panel' : !showMenu1}">
         <div class="container echo_menu_title">Visualisation données de machines</div>
         <pre>{{"{{nodedata | json}}"}}</pre>
       </div>
 
       <!-- menu de visualisation ? -->
       <div class="echo_panel_openbutton echo_panel_openbutton_right hvr-sweep-to-left menu_btn_right_2" 
-        ng-click="showMenu2 = !showMenu2; showMenu1 = false; showMenu3 = false" 
         @click="() => {showMenu1 = false; showMenu2 = !showMenu2; showMenu3 = false}">
       </div>
-      <div class="d-flex flex-wrap echo_menu_right" v-bind:class="{'v-hide' : !showMenu2}">
+      <div class="d-flex flex-wrap echo_menu_right" v-bind:class="{'v-hide' : !showMenu2, 'v-hide-panel' : !showMenu2}">
         <div class="container echo_menu_title">Visualisation données de services</div>
         <pre>{{"{{servicedata | json}}"}}</pre>
       </div>
@@ -189,10 +187,10 @@
         ng-click="showMenu3 = !showMenu3; showMenu2 = false; showMenu1 = false" 
         @click="() => {showMenu1 = false; showMenu2 = false; showMenu3 = !showMenu3}">
       </div>
-      <div class="d-flex flex-wrap echo_menu_right" v-bind:class="{'v-hide' : !showMenu3}">
+      <div class="d-flex flex-wrap echo_menu_right" v-bind:class="{'v-hide' : !showMenu3, 'v-hide-panel' : !showMenu3}">
         <div class="container echo_menu_title">Manipulations du graph</div>
         <input class="echo_to_hide" type="file" id="echo_json_upload" name="file"/>
-        <div class="echo_button_scan hvr-hollow" ng-click="checkAPI()"><i class="las la-tasks"></i>check API</div>
+        <div class="echo_button_scan hvr-hollow" @click="checkAPI()"><i class="las la-tasks"></i>check API</div>
         <div class="echo_button_scan hvr-hollow" ng-click="addNote()"><i class="las la-comment"></i>add Note</div>
         <div class="echo_button_scan hvr-hollow" ng-click="exportPNG()"><i class="las la-download"></i>export PNG</div>
         <div class="echo_button_scan hvr-hollow" ng-click="exportJPG()"><i class="las la-download"></i>export JPG</div>

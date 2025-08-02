@@ -15,6 +15,9 @@ export default Vue.createApp({
     },
     methods: {
     // fonctions 
+    updateTheme : function(theme) {
+      // TODO
+    }
     
   },
 })

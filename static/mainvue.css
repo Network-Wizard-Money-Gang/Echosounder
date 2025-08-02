@@ -283,6 +283,11 @@ header > center > div > img{
   opacity: 0;
 }
 
+/* v-hide-panel augmenté car il existe une propriété display de d-flex mise en important */
+.echo_menu_left.v-hide-panel {
+  visibility: hidden !important;
+}
+
 .echo_scan_cible {
   position: relative;
   margin-bottom: 10px;
@@ -432,6 +437,11 @@ header > center > div > img{
 .echo_menu_right.v-hide {
   right: -400px;
   opacity: 0;
+}
+
+/* v-hide-panel augmenté car il existe une propriété display de d-flex mise en important */
+.echo_menu_right.v-hide-panel {
+  visibility: hidden !important;
 }
 
 .echo_node_data {

@@ -18,6 +18,8 @@ export default Vue.createApp({
     },
     methods: {
     // fonctions 
-    
+    checkAPI : function() {
+      mitt.emitter.emit('check_health')
+    }
   },
 })
