@@ -20,6 +20,8 @@ export default Vue.createApp({
         portShow : false,
         portStart : "0",
         portEnd : "400",
+        // gestion des cibles
+        nodesSelected : [],
       }
     },
     methods: {

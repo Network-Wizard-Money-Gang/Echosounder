@@ -275,17 +275,31 @@ header > center > div > img{
   background-color: rgba(var(--rgb-background-gradiance1), 0.8);
   border: 1px solid var(--widget-contour2);
   box-shadow: inset 0 0 40px -20px var(--widget-contour1);
-  transition: all linear 0.5s;
 }
 
-.echo_menu_left.v-hide {
-  left: -400px;
+.slide-left-enter-active,
+.slide-left-leave-active {
+  transition: all 0.5s linear;
+}
+
+.slide-left-enter-from {
   opacity: 0;
+  transform: translateX(-400px);
 }
 
-/* v-hide-panel augmenté car il existe une propriété display de d-flex mise en important */
-.echo_menu_left.v-hide-panel {
-  visibility: hidden !important;
+.slide-left-enter-to {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slide-left-leave-from {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slide-left-leave-to {
+  opacity: 0;
+  transform: translateX(-400px);
 }
 
 .echo_scan_cible {
@@ -434,14 +448,24 @@ header > center > div > img{
   transition: all linear 0.5s;
 }
 
-.echo_menu_right.v-hide {
-  right: -400px;
+.slide-right-enter-from {
   opacity: 0;
+  transform: translateX(400px);
 }
 
-/* v-hide-panel augmenté car il existe une propriété display de d-flex mise en important */
-.echo_menu_right.v-hide-panel {
-  visibility: hidden !important;
+.slide-right-enter-to {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slide-right-leave-from {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slide-right-leave-to {
+  opacity: 0;
+  transform: translateX(400px);
 }
 
 .echo_node_data {

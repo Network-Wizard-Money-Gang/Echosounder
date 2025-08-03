@@ -11,6 +11,22 @@ export default Vue.createApp({
     this.cyto = cytoscape({
       container: document.getElementById('mynetwork')
     });
+    // création des évènements du graph
+    this.cyto.on('tap', 'node', function(evt){
+      // on envoie aux apps vue le noeud à afficher :
+      if(evt.target.data('type') == 'IP') {
+        mitt.emitter.emit("rightpanelmenu_ip", evt.target.data());
+      }
+      if(evt.target.data('type') == 'Service') {
+        mitt.emitter.emit("rightpanelmenu_service", evt.target.data());
+      }
+    });
+    this.cyto.on('dblclick', function(evt){
+      console.log('double clic reset panels')
+      // on envoie au parent le noeud à afficher :
+      // TODO
+      //$scope.$parent.$broadcast("resetPanels");
+    });
     this.loadStyle();
     console.log(this);
   },
@@ -724,5 +740,70 @@ export default Vue.createApp({
           }
         });
       },
+      // fonction de création d'une image PNG du graph
+      getCytoPNG : function() {
+        this.cyto.png({output : 'blob-promise'}).then(function(data) {
+          let element = document.createElement('a');
+          element.setAttribute('href', window.URL.createObjectURL(data));
+          element.setAttribute('download', "graph.png");
+          element.style.display = 'none';
+          document.body.appendChild(element);
+        
+          element.click();
+        
+          document.body.removeChild(element);
+        }).catch(function(error ) {
+          console.log(error);
+        });
+      },
+
+      getCytoJPG : function() {
+        this.cyto.jpg({output : 'blob-promise'}).then(function(data) {
+          let element = document.createElement('a');
+          element.setAttribute('href', window.URL.createObjectURL(data));
+          element.setAttribute('download', "graph.jpg");
+          element.style.display = 'none';
+          document.body.appendChild(element);
+        
+          element.click();
+        
+          document.body.removeChild(element);
+        }).catch(function(error ) {
+          console.log(error);
+        });
+      },
+
+      getCytoJSON : function() {
+        let element = document.createElement('a');
+        element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.cyto.json())));
+        element.setAttribute('download', "graph.json");
+        element.style.display = 'none';
+        document.body.appendChild(element);
+      
+        element.click();
+      
+        document.body.removeChild(element);
+      },
+      // fonction d'export du graph en différents formats : 
+      exportGraph : function(typeexport) {
+        if(typeexport == "png") { this.getCytoPNG(); };
+        if(typeexport == "jpg") { this.getCytoJPG(); };
+        if(typeexport == "json") { this.getCytoJSON(); };
+      },
+      // fonction insérant du json uploadé dans le graph
+      setCytoJSON : function(param_json) {
+        this.cyto.json(param_json);
+      },
+      // fonction exécutant une action sur le graph demandé par une autre app vuejs
+      actionGraph : function(action) {
+        // todo
+        if(action == "actualize") {
+          this.layout = this.cyto.layout(this.options);
+          this.layout.run();
+        }
+        if(action == "delete_selection") {
+          this.cyto.elements('node:selected').remove();
+        }
+      }
   },
 })

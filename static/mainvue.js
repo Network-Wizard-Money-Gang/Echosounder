@@ -143,10 +143,18 @@ mitt.emitter.on('toppanelmenu_addressfamily', (addressfamilydata) => topPanelMen
 // fonction de mise à jour de cible pour leftPanelMenu
 mitt.emitter.on('leftpanelmenu_cible', (cible) => leftPanelMenuApp.addOrUpdateCible(cible));
 
+// fonction de mise à jour de donnée node/service pour rightPanelMenu
+mitt.emitter.on('rightpanelmenu_ip', (machine) => rightPanelMenuApp.addOrUpdateMachine(machine));
+mitt.emitter.on('rightpanelmenu_service', (service) => rightPanelMenuApp.addOrUpdateService(service));
+
 // fonctions d'envoie des demandes de scans au graph
 mitt.emitter.on('scan_local', (scanobj) => graphNetworkApp.receiveEmitRequestLocalScan(scanobj));
 mitt.emitter.on('scan_general', (scanobj) => graphNetworkApp.receiveEmitRequestGeneralScan(scanobj));
-
+// fonction d'envoie des demandes d'export/import au graph
+mitt.emitter.on('request_export', (typeexport) => graphNetworkApp.exportGraph(typeexport));
+mitt.emitter.on('request_import_json', (file) => graphNetworkApp.importJson(file));
+// fonction générales de manipulation du graph par les menu
+mitt.emitter.on('request_action_graph', (action) => graphNetworkApp.actionGraph(action));
 
 // fonction de mise à jour du thème graphique pour cytoscape
 mitt.emitter.on('reloadStyle', (theme) => graphNetworkApp.loadStyle());

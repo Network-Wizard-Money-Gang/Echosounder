@@ -87,79 +87,87 @@
       <div class="echo_panel_openbutton echo_panel_openbutton_left hvr-sweep-to-right menu_btn_left_1" 
         @click="() => {showMenu1 = !showMenu1; showMenu2 = false; showMenu3 = false}">
       </div>
-      <div class="d-flex flex-wrap echo_menu_left" v-bind:class="{'v-hide' : !showMenu1}">
-        <!-- titre -->
-        <div class="container echo_menu_title">Scan réseau local</div>
-        <!-- scan sans cible (level 2) -->
-        <div class="container echo_scan_panel">
-          <div class="echo_button_scan hvr-hollow" @click="clickScanARP()">Scan ARP</div>
-          <div class="echo_button_scan hvr-hollow" @click="clickFastPing()">Scan Ping</div>
+      <Transition name="slide-left">
+        <div class="d-flex flex-wrap echo_menu_left" v-if="showMenu1">
+          <!-- titre -->
+          <div class="container echo_menu_title">Scan réseau local</div>
+          <!-- scan sans cible (level 2) -->
+          <div class="container echo_scan_panel">
+            <div class="echo_button_scan hvr-hollow" @click="clickScanARP()">Scan ARP</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickFastPing()">Scan Ping</div>
+          </div>
+          <br>
+          <div class="container echo_menu_subtitle"></div>
+          <br>
+          <!-- cible à scanner -->
+          <div class="container echo_menu_title">Scan réseau CIDR</div>
+          <div class="container echo_scan_cible">
+            <input class="echo_input_effect" type="text" name="cible_ip_cidr" placeholder="cidr" v-model="cible" required>
+            <label for="name" class="echo_input_effect_label">IP/CIDR</label>
+          </div>
+          <!-- Type de scan CIDR sur cible -->
+          <div class="container echo_scan_panel">
+            <div class="echo_button_scan hvr-hollow" @click="clickScanDHCP()">Scan DHCP</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanCIDRTraceroute()">Scan traceroute</div>
+          </div>
         </div>
-        <br>
-        <div class="container echo_menu_subtitle"></div>
-        <br>
-        <!-- cible à scanner -->
-        <div class="container echo_menu_title">Scan réseau CIDR</div>
-        <div class="container echo_scan_cible">
-          <input class="echo_input_effect" type="text" name="cible_ip_cidr" placeholder="cidr" v-model="cible" required>
-          <label for="name" class="echo_input_effect_label">IP/CIDR</label>
-        </div>
-        <!-- Type de scan CIDR sur cible -->
-        <div class="container echo_scan_panel">
-          <div class="echo_button_scan hvr-hollow" @click="clickScanDHCP()">Scan DHCP</div>
-          <div class="echo_button_scan hvr-hollow" @click="clickScanCIDRTraceroute()">Scan traceroute</div>
-        </div>
-      </div>
+      </Transition>
+      
       <!-- menu de scan machine -->
       <div class="echo_panel_openbutton echo_panel_openbutton_left hvr-sweep-to-right menu_btn_left_2" 
         @click="() => {showMenu1 = false; showMenu2 = !showMenu2; showMenu3 = false}">
       </div>
-      <div class="d-flex flex-wrap echo_menu_left" v-bind:class="{'v-hide' : !showMenu2}">
-        <div class="container echo_menu_title">Scan machine</div>
-        <!-- Ensemble des boutons de scan d'une machine spécifique -->
-        <div class="container echo_scan_cible" ng-hide="nodesSelected.length > 0">
-          <input class="echo_input_effect" type="text" name="cible_machine_cible" placeholder="ip" ng-model="machineCible" required>
-          <label for="name" class="echo_input_effect_label">IP CIBLE</label>
-        </div>
-        <div class="container echo_scan_panel" ng-show="nodesSelected.length > 0">
-          <span ng-repeat="i in nodesSelected" class="echo_ip_selected">{{"{{i}}"}} <i class="las la-window-close" ng-click="deleteIPSelected(i)"></i></span>
-          <div class="container button_ip_delete_all" ng-click="deleteAllIPSelected()"><i class="las la-trash-alt"></i> Effacer sélection</div>
-          <div class="container echo_menu_subtitle"></div>
-        </div>
-        <div class="container echo_scan_panel"> 
-          <div class="echo_button_scan hvr-hollow" ng-click="clickScanProfiling()">Scan profiling</div>
-          <div class="echo_button_scan hvr-hollow" ng-click="clickScanReversePTR()">Scan Reverse PTR</div>
-          <div class="echo_button_scan hvr-hollow" ng-click="clickScanSSHFingerprint()">Scan SSH fingerprint</div>
-          <div class="echo_button_scan hvr-hollow" ng-click="clickScanSMB()">Scan SMB</div>
-          <div class="echo_button_scan hvr-hollow" ng-click="clickScanSNMP()">Scan SNMP</div>
-          <div class="echo_button_scan hvr-hollow" ng-click="clickScanSNMPnetstat()">Scan SNMP netstat</div>
-          <div class="echo_button_scan hvr-hollow" ng-click="clickScanSNMPprocess()">Scan SNMP process</div>
-          <div class="echo_button_scan hvr-hollow" ng-click="clickScanNTP()">Scan NTP</div>
-          <div class="echo_button_scan hvr-hollow" ng-click="clickScanRDP()">Scan RDP</div>
-          <div class="echo_button_scan hvr-hollow" ng-click="clickScanTracerouteCible()">Scan traceroute</div>
-          <div class="container echo_menu_subtitle"></div>
-          <div class="container echo_scan_cible ng-hide" ng-show="portShow" ><input class="echo_input_effect" type="text" name="cible_port_1" placeholder="ip" ng-model="portStart" required>
-            <label for="name" class="echo_input_effect_label">PORT MIN</label>
+      <Transition name="slide-left">
+        <div class="d-flex flex-wrap echo_menu_left" v-if="showMenu2">
+          <div class="container echo_menu_title">Scan machine</div>
+          <!-- Ensemble des boutons de scan d'une machine spécifique -->
+          <div class="container echo_scan_cible" v-hide="nodesSelected.length > 0">
+            <input class="echo_input_effect" type="text" name="cible_machine_cible" placeholder="ip" v-model="machineCible" required>
+            <label for="name" class="echo_input_effect_label">IP CIBLE</label>
           </div>
-          <div class="container echo_scan_cible ng-hide" ng-show="portShow"><input class="echo_input_effect" type="text" name="cible_port2" placeholder="ip" ng-model="portEnd" required>
-            <label for="name" class="echo_input_effect_label">PORT MAX</label>
+          <div class="container echo_scan_panel" v-show="nodesSelected.length > 0">
+            <span ng-repeat="i in nodesSelected" class="echo_ip_selected">{{"{{i}}"}} <i class="las la-window-close" @click="deleteIPSelected(i)"></i></span>
+            <div class="container button_ip_delete_all" @click="deleteAllIPSelected()"><i class="las la-trash-alt"></i> Effacer sélection</div>
+            <div class="container echo_menu_subtitle"></div>
           </div>
-          <div class="echo_button_scan hvr-hollow"  ng-click="clickScanServices()">Scan services</div>
-          <div class="echo_button_scan hvr-hollow"  ng-click="clickScanFastServices()">Scan common services</div>
-          <div class="container echo_menu_subtitle"></div>
-          <div class="echo_button_scan hvr-hollow" ng-click="getSelectionScan()">Récupérer sélection à scanner</div>
+          <div class="container echo_scan_panel"> 
+            <div class="echo_button_scan hvr-hollow" @click="clickScanProfiling()">Scan profiling</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanReversePTR()">Scan Reverse PTR</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanSSHFingerprint()">Scan SSH fingerprint</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanSMB()">Scan SMB</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanSNMP()">Scan SNMP</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanSNMPnetstat()">Scan SNMP netstat</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanSNMPprocess()">Scan SNMP process</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanNTP()">Scan NTP</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanRDP()">Scan RDP</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanTracerouteCible()">Scan traceroute</div>
+            <div class="container echo_menu_subtitle"></div>
+            <div class="container echo_scan_cible" v-show="portShow" ><input class="echo_input_effect" type="text" name="cible_port_1" placeholder="ip" v-model="portStart" required>
+              <label for="name" class="echo_input_effect_label">PORT MIN</label>
+            </div>
+            <div class="container echo_scan_cible" v-show="portShow"><input class="echo_input_effect" type="text" name="cible_port2" placeholder="ip" v-model="portEnd" required>
+              <label for="name" class="echo_input_effect_label">PORT MAX</label>
+            </div>
+            <div class="echo_button_scan hvr-hollow"  @click="clickScanServices()">Scan services</div>
+            <div class="echo_button_scan hvr-hollow"  @click="clickScanFastServices()">Scan common services</div>
+            <div class="container echo_menu_subtitle"></div>
+            <div class="echo_button_scan hvr-hollow" @click="getSelectionScan()">Récupérer sélection à scanner</div>
+          </div>
         </div>
-      </div>
+      </Transition>
+
       <!-- menu de scan spécifique -->
       <div class="echo_panel_openbutton echo_panel_openbutton_left hvr-sweep-to-right menu_btn_left_3" 
         @click="() => {showMenu1 = false; showMenu2 = false; showMenu3 = !showMenu3}">
       </div>
-      <div class="d-flex flex-wrap echo_menu_left" v-bind:class="{'v-hide' : !showMenu3}">
-        <div class="container echo_menu_title">Scan spécifiques</div>
-        <div class="echo_button_scan hvr-hollow" @click="clickTracerouteLocal()">Scan traceroute -> réseau locaux</div>
-        <div class="echo_button_scan hvr-hollow" @click="clickTracerouteGlobal()">Scan traceroute -> internet</div>
-        <div class="echo_button_scan hvr-hollow" @click="clickResolveAS()">Scan AS ID -> Name</div>
-      </div>
+      <Transition name="slide-left">
+        <div class="d-flex flex-wrap echo_menu_left" v-if="showMenu3">
+          <div class="container echo_menu_title">Scan spécifiques</div>
+          <div class="echo_button_scan hvr-hollow" @click="clickTracerouteLocal()">Scan traceroute -> réseau locaux</div>
+          <div class="echo_button_scan hvr-hollow" @click="clickTracerouteGlobal()">Scan traceroute -> internet</div>
+          <div class="echo_button_scan hvr-hollow" @click="clickResolveAS()">Scan AS ID -> Name</div>
+        </div>
+      </Transition>
     </div>
 
     <!-- panels de manipulation de droite (facho) -->
@@ -168,42 +176,48 @@
       <div class="echo_panel_openbutton echo_panel_openbutton_right hvr-sweep-to-left menu_btn_right_1" 
         @click="() => {showMenu1 = !showMenu1; showMenu2 = false; showMenu3 = false}">
       </div>
-      <div class="d-flex flex-wrap echo_menu_right echo_node_data" v-bind:class="{'v-hide' : !showMenu1, 'v-hide-panel' : !showMenu1}">
-        <div class="container echo_menu_title">Visualisation données de machines</div>
-        <pre>{{"{{nodedata | json}}"}}</pre>
-      </div>
+      <Transition name="slide-right">
+        <div class="d-flex flex-wrap echo_menu_right echo_node_data" v-if="showMenu1">
+          <div class="container echo_menu_title">Visualisation données de machines</div>
+          <pre>{{"{{nodedata }}"}}</pre>
+        </div>
+      </Transition>
 
       <!-- menu de visualisation ? -->
       <div class="echo_panel_openbutton echo_panel_openbutton_right hvr-sweep-to-left menu_btn_right_2" 
         @click="() => {showMenu1 = false; showMenu2 = !showMenu2; showMenu3 = false}">
       </div>
-      <div class="d-flex flex-wrap echo_menu_right" v-bind:class="{'v-hide' : !showMenu2, 'v-hide-panel' : !showMenu2}">
-        <div class="container echo_menu_title">Visualisation données de services</div>
-        <pre>{{"{{servicedata | json}}"}}</pre>
-      </div>
+      <Transition name="slide-right">
+        <div class="d-flex flex-wrap echo_menu_right" v-if="showMenu2">
+          <div class="container echo_menu_title">Visualisation données de services</div>
+          <pre>{{"{{servicedata }}"}}</pre>
+        </div>
+      </Transition>
 
       <!-- menu de manipulation du graphe -->
       <div class="echo_panel_openbutton echo_panel_openbutton_right hvr-sweep-to-left menu_btn_right_3" 
         ng-click="showMenu3 = !showMenu3; showMenu2 = false; showMenu1 = false" 
         @click="() => {showMenu1 = false; showMenu2 = false; showMenu3 = !showMenu3}">
       </div>
-      <div class="d-flex flex-wrap echo_menu_right" v-bind:class="{'v-hide' : !showMenu3, 'v-hide-panel' : !showMenu3}">
-        <div class="container echo_menu_title">Manipulations du graph</div>
-        <input class="echo_to_hide" type="file" id="echo_json_upload" name="file"/>
-        <div class="echo_button_scan hvr-hollow" @click="checkAPI()"><i class="las la-tasks"></i>check API</div>
-        <div class="echo_button_scan hvr-hollow" ng-click="addNote()"><i class="las la-comment"></i>add Note</div>
-        <div class="echo_button_scan hvr-hollow" ng-click="exportPNG()"><i class="las la-download"></i>export PNG</div>
-        <div class="echo_button_scan hvr-hollow" ng-click="exportJPG()"><i class="las la-download"></i>export JPG</div>
-        <div class="echo_button_scan hvr-hollow" ng-click="exportJSON()"><i class="las la-download"></i>export JSON</div>
-        <div class="echo_button_scan hvr-hollow" ng-click="importJSON()"><i class="las la-file-upload"></i>import JSON</div>
-        <div class="echo_button_scan hvr-hollow" ng-click="actualiseGraph()"><i class="las la-sync-alt"></i>refresh Graph</div>
-        <div class="container echo_menu_subtitle"></div>
-        <!-- case de suppression de noeud du graph -->
-        <div class="echo_button_scan hvr-hollow" ng-click="deleteSelection()"><i class="las la-trash-alt"></i>Supprimer Sélection</div>
-      </div>
-
+      <Transition name="slide-right">
+        <div class="d-flex flex-wrap echo_menu_right" v-if="showMenu3">
+          <div class="container echo_menu_title">Manipulations du graph</div>
+          <input class="echo_to_hide" type="file" id="echo_json_upload" name="file"/>
+          <div class="echo_button_scan hvr-hollow" @click="checkAPI()"><i class="las la-tasks"></i>check API</div>
+          <div class="echo_button_scan hvr-hollow" @click="addNote()"><i class="las la-comment"></i>add Note</div>
+          <div class="echo_button_scan hvr-hollow" @click="exportGraph('png')"><i class="las la-download"></i>export PNG</div>
+          <div class="echo_button_scan hvr-hollow" @click="exportGraph('jpg')"><i class="las la-download"></i>export JPG</div>
+          <div class="echo_button_scan hvr-hollow" @click="exportGraph('json')"><i class="las la-download"></i>export JSON</div>
+          <div class="echo_button_scan hvr-hollow" @click="importJSON()"><i class="las la-file-upload"></i>import JSON</div>
+          <div class="echo_button_scan hvr-hollow" @click="actionGraph('actualize')"><i class="las la-sync-alt"></i>refresh Graph</div>
+          <div class="container echo_menu_subtitle"></div>
+          <!-- case de suppression de noeud du graph -->
+          <div class="echo_button_scan hvr-hollow" @click="actionGraph('delete_selection')"><i class="las la-trash-alt"></i>Supprimer Sélection</div>
+        </div>
+      </Transition>
+      
       <!-- dialog note on graph -->
-      <div class="flex flex-wrap echo_dialog_node ng-hide" ng-show="showDialogNote">
+      <div class="flex flex-wrap echo_dialog_node" v-if="showDialogNote">
         <div class="container echo_menu_title">Ajout de commentaire</div>
         <!-- juste un bouton pour tout supprimer-->
         <div class="hvr-hollow echo_note_cross" ng-click="showDialogNote = false"><i class="las la-times"></i></div>

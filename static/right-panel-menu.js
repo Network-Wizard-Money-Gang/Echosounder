@@ -14,12 +14,58 @@ export default Vue.createApp({
         showMenu1 : false,
         showMenu2 : false,
         showMenu3 : false,
+        // variable d'affichage du menu d'ajout de note
+        showDialogNote : false,
+        // variable d'info sur machine
+        nodedata : {},
+        // variable d'info sur service
+        servicedata : {},
       }
     },
     methods: {
-    // fonctions 
+    // fonction de mise à jour des info de node/machine
+    addOrUpdateMachine : function(machine) {
+      this.nodedata = machine;
+      this.showMenu1 = true;
+      this.showMenu2 = false;
+      this.showMenu3 = false;
+    },
+    // fonction de mise à jour des info de service
+    addOrUpdateService : function(service) {
+      this.service.data = service;
+      this.showMenu1 = false;
+      this.showMenu2 = true;
+      this.showMenu3 = false;
+    },
+    // fonctions de trigger d'un getHealth API 
     checkAPI : function() {
-      mitt.emitter.emit('check_health')
-    }
+      mitt.emitter.emit('check_health');
+    },
+    addNote : function() {
+      this.showDialogNote = !this.showDialogNote;
+    },
+    exportGraph : function(typeexport) {
+      mitt.emitter.emit('request_export', typeexport);
+    },
+    importJSON : function() {
+      if(document.getElementById('echo_json_upload').files.length == 0) {
+        document.getElementById('echo_json_upload').click();
+      }else {
+        let f = document.getElementById('echo_json_upload').files[0],
+            r = new FileReader();
+
+        r.onloadend = function(e) {
+          let data = e.target.result;
+          // On envoie le fichier
+          mitt.emitter.emit('request_import_json', {'file' : data});
+        }
+
+        r.readAsBinaryString(f);
+        document.getElementById('echo_json_upload').value = "";
+      }
+    },
+    actionGraph : function(action) {
+      mitt.emitter.emit('request_action_graph', action);
+    },
   },
 })
