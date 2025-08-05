@@ -14,8 +14,10 @@ export default Vue.createApp({
         showMenu1 : false,
         showMenu2 : false,
         showMenu3 : false,
-        // IP/CIDR de cible de base
+        // IP/CIDR de VLAN de base
         cible : "192.168.1.0/24",
+        // IP de machine cible
+        machineCible : "",
         // affichage de la range de port
         portShow : false,
         portStart : "0",
@@ -25,9 +27,13 @@ export default Vue.createApp({
       }
     },
     methods: {
-    // fonctions de mise à jour de la cible
+    // fonctions de mise à jour de VLAN cible
     addOrUpdateCible : function(cible) {
-      this.cible = cible;
+      this.cible = cible.id;
+    },
+    // fonctions de mise à jour de machine cible
+    addOrUpdateMachineCible : function(machineCible) {
+      this.machineCible = machineCible.id.split('\n')[0]; // on est obligés de split car on a fait en sorte que l'id contienne l'IP et l'adresse mac
     },
     // fonctions de scan local
     clickScanARP : function() {
@@ -47,7 +53,10 @@ export default Vue.createApp({
       mitt.emitter.emit('scan_local', {type : 'request_traceroute_cidr_scan', cible : this.cible});
     },
     // fonction de scan machines
-
+    clickScanMachine : function(typescan) {
+      console.log("emit scan machine " + typescan);
+      mitt.emitter.emit('scan_machine', {type : typescan, cible : this.machineCible});
+    },
     // fonctions de scan de placement étendue (global)
     clickTracerouteLocal : function() {
       console.log("emit local traceroute scan request");

@@ -143,13 +143,16 @@ mitt.emitter.on('toppanelmenu_addressfamily', (addressfamilydata) => topPanelMen
 // fonction de mise à jour de cible pour leftPanelMenu
 mitt.emitter.on('leftpanelmenu_cible', (cible) => leftPanelMenuApp.addOrUpdateCible(cible));
 
-// fonction de mise à jour de donnée node/service pour rightPanelMenu
-mitt.emitter.on('rightpanelmenu_ip', (machine) => rightPanelMenuApp.addOrUpdateMachine(machine));
-mitt.emitter.on('rightpanelmenu_service', (service) => rightPanelMenuApp.addOrUpdateService(service));
+// fonction de mise à jour de donnée node/service pour leftPanelMenu/rightPanelMenu
+mitt.emitter.on('graph_vlan', (vlan) => leftPanelMenuApp.addOrUpdateCible(vlan));
+mitt.emitter.on('graph_ip', (machine) => {rightPanelMenuApp.addOrUpdateMachine(machine); leftPanelMenuApp.addOrUpdateMachineCible(machine)});
+mitt.emitter.on('graph_service', (service) => rightPanelMenuApp.addOrUpdateService(service));
 
 // fonctions d'envoie des demandes de scans au graph
 mitt.emitter.on('scan_local', (scanobj) => graphNetworkApp.receiveEmitRequestLocalScan(scanobj));
 mitt.emitter.on('scan_general', (scanobj) => graphNetworkApp.receiveEmitRequestGeneralScan(scanobj));
+mitt.emitter.on('scan_machine', (scanobj) => graphNetworkApp.receiveEmitRequestMachineScan(scanobj));
+
 // fonction d'envoie des demandes d'export/import au graph
 mitt.emitter.on('request_export', (typeexport) => graphNetworkApp.exportGraph(typeexport));
 mitt.emitter.on('request_import_json', (file) => graphNetworkApp.importJson(file));

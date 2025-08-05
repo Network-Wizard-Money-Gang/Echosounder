@@ -16,6 +16,9 @@ export default Vue.createApp({
         showMenu3 : false,
         // variable d'affichage du menu d'ajout de note
         showDialogNote : false,
+        // variables de notes
+        titreNote : "",
+        texteNote : "",
         // variable d'info sur machine
         nodedata : {},
         // variable d'info sur service
@@ -43,6 +46,17 @@ export default Vue.createApp({
     },
     addNote : function() {
       this.showDialogNote = !this.showDialogNote;
+    },
+    addNoteValidate : function() {
+      console.log("emit add note request");
+      mitt.emitter.emit('request_scan', {"cible" : {}, 
+                                              "titre" : this.titreNote,
+                                              "texte" : this.texteNote, 
+                                              'callScan' : 'request_add_note'});
+      // on reset le dialog
+      this.titreNote = "";
+      this.texteNote = "";
+
     },
     exportGraph : function(typeexport) {
       mitt.emitter.emit('request_export', typeexport);

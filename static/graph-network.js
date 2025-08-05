@@ -14,11 +14,14 @@ export default Vue.createApp({
     // création des évènements du graph
     this.cyto.on('tap', 'node', function(evt){
       // on envoie aux apps vue le noeud à afficher :
+      if(evt.target.data('type') == 'VLAN') {
+        mitt.emitter.emit("graph_vlan", evt.target.data());
+      }
       if(evt.target.data('type') == 'IP') {
-        mitt.emitter.emit("rightpanelmenu_ip", evt.target.data());
+        mitt.emitter.emit("graph_ip", evt.target.data());
       }
       if(evt.target.data('type') == 'Service') {
-        mitt.emitter.emit("rightpanelmenu_service", evt.target.data());
+        mitt.emitter.emit("graph_service", evt.target.data());
       }
     });
     this.cyto.on('dblclick', function(evt){
@@ -55,7 +58,18 @@ export default Vue.createApp({
           'request_dhcp_cidr_scan' : this.getDHCP_CIDRScan,
           'request_traceroute_cidr_scan' : this.getTracerouteCIDRScan,
         },
-        listMachineScanFunc :{},
+        listMachineScanFunc :{
+          'request_profiling_scan' : this.getProfilingScan,
+          'request_reverse_ptr_scan' : this.getReversePTRScan,
+          'request_fingerprint_ssh_scan' : this.getFingerprintSSHScan,
+          'request_smb_scan' : this.getSMBScan,
+          'request_snmp_scan' : this.getSNMPScan,
+          'request_snmp_netstat_scan' : this.getSNMPnetstatScan,
+          'request_snmp_process_scan' : this.getSNMPprocessScan,
+          'request_ntp_scan' : this.getNTPScan,
+          'request_rdp_scan' : this.getRDPScan,
+          'request_trace_cible_scan' : this.getTraceCibleScan,
+        },
         listGlobalFunc : {
           'request_traceroute_local_scan' : this.getTracerouteLocalScan, 
           'request_traceroute_global_scan' : this.getTracerouteGlobalScan,
@@ -284,6 +298,201 @@ export default Vue.createApp({
         });
       },
 
+      // fonction de scan machine
+      // fonctions de profiling machine (OS, device, ...)
+      getProfilingScan : function(cible) {
+        mitt.emitter.emit('echo_toast_scan', "Lancement scan profiling");
+        axios({
+          method : 'POST',
+          url : '/json/profiling_scan',
+          headers: {'Content-Type': 'application/json'},
+          data : {'cible' : cible},
+        }).then((response) => {
+          // si la requête passe :          
+          mitt.emitter.emit('echo_toast_scan', "Réception scan profiling");
+          // on met à jour le node concerné via une fonction de sélection de node
+          this.updateNodebyIP(cible, 'profiling', response.data['scan']);
+          this.updateNodeOS(cible, response.data['scan']);
+        }).catch((error) => {
+          mitt.emitter.emit('echo_toast_scan', "Erreur scan profiling");
+          console.log(error);
+        });
+      },
+      // fonction d'obtention du hostname par requête DNS reverse PTR sur cible
+      getReversePTRScan : function(cible) {
+        mitt.emitter.emit('echo_toast_scan', "Lancement scan PTR");
+        axios({
+          method : 'POST',
+          url : '/json/reverse_ptr_scan',
+          headers: {'Content-Type': 'application/json'},
+          data : {'cible' : cible},
+        }).then((response) => {
+          // si la requête passe :
+          mitt.emitter.emit('echo_toast_scan', "Réception scan PTR");
+          // on met à jour le node concerné via une fonction de sélection de node
+          this.updateNodebyIP(cible, 'hostname PTR', response.data['scan']);
+        }).catch((error) => {
+          // si la requête échoue :
+          mitt.emitter.emit('echo_toast_scan', "Erreur scan PTR");
+          console.log(error);
+        });
+      },
+      // fonction d'obtention de fingerprint SSH par requête SSH sur cible
+      getFingerprintSSHScan : function(cible) {
+        mitt.emitter.emit('echo_toast_scan', "Lancement scan fingerprint SSH");
+        axios({
+          method : 'POST',
+          url : '/json/fingerpting_ssh_scan',
+          headers: {'Content-Type': 'application/json'},
+          data : {'cible' : cible},
+        }).then((response) => {
+          // si la requête passe :
+          mitt.emitter.emit('echo_toast_scan', "Réception scan fingerprint SSH");
+            // on met à jour le node concerné via une fonction de sélection de node
+            this.updateNodebyIP(cible, 'fingerprint ssh', response.data['scan']);
+          },
+          // si la requête échoue :
+          function(error) {
+            mitt.emitter.emit('echo_toast_scan', "Erreur scan fingerprint SSH");
+            console.log(error);
+          }
+        );
+      },
+      // fonction d'obtention d'info sur un SMB share
+      getSMBScan : function(cible) {
+        mitt.emitter.emit('echo_toast_scan', "Lancement scan SMB");
+        axios({
+          method : 'POST',
+          url : '/json/scan_info_smb',
+          headers: {'Content-Type': 'application/json'},
+          data : {'cible' : cible},
+        }).then((response) => {
+          // si la requête passe :          
+          mitt.emitter.emit('echo_toast_scan', "Réception scan SMB");
+          // on met à jour le node concerné via une fonction de sélection de node
+          this.updateNodebyIP(cible, 'smb', response.data['scan']);
+        }).catch((error) => {
+          // si la requête échoue :
+          mitt.emitter.emit('echo_toast_scan', "Erreur scan SMB");
+          console.log(error);
+        });
+      },
+      // fonction d'obtention d'info sur une entrée SNMP
+      getSNMPScan : function(cible) {
+        mitt.emitter.emit('echo_toast_scan', "Lancement scan SNMP");
+        axios({
+          method : 'POST',
+          url : '/json/scan_snmp_info',
+          headers: {'Content-Type': 'application/json'},
+          data : {'cible' : cible},
+        }).then((response) => {
+          // si la requête passe :
+          mitt.emitter.emit('echo_toast_scan', "Réception scan SNMP");
+          // on met à jour le node concerné via une fonction de sélection de node
+          this.updateNodebyIP(cible, 'snmp_info', response.data['scan']);
+        }).catch((error) => {
+        // si la requête échoue :
+          mitt.emitter.emit('echo_toast_scan', "Erreur scan SNMP");
+          console.log(error);
+        });
+      },
+      // fonction d'obtention d'info sur une entrée SNMP netstat
+      getSNMPnetstatScan : function(cible) {
+        mitt.emitter.emit('echo_toast_scan', "Lancement scan SNMP netstat");
+        axios({
+          method : 'POST',
+          url : '/json/scan_snmp_netstat',
+          headers: {'Content-Type': 'application/json'},
+          data : {'cible' : cible},
+        }).then((response) => {
+          // si la requête passe :          
+          mitt.emitter.emit('echo_toast_scan', "Réception scan SNMP netstat");
+          // on met à jour le node concerné via une fonction de sélection de node
+          this.updateNodebyIP(cible, 'snmp_nestat', response.data['scan']);
+        }).catch((error) => {
+          // si la requête échoue :
+          mitt.emitter.emit('echo_toast_scan', "Erreur scan SNMP netstat");
+          console.log(error);
+        });
+      },
+      // fonction d'obtention d'info sur une entrée SNMP getprocess
+      getSNMPprocessScan : function(cible) {
+        mitt.emitter.emit('echo_toast_scan', "Lancement scan SNMP process");
+        axios({
+          method : 'POST',
+          url : '/json/scan_snmp_processes',
+          headers: {'Content-Type': 'application/json'},
+          data : {'cible' : cible},
+        }).then((response) => {
+          // si la requête passe :      
+          mitt.emitter.emit('echo_toast_scan', "Lancement scan SNMP process");
+          // on met à jour le node concerné via une fonction de sélection de node
+          this.updateNodebyIP(cible, 'snmp_process', response.data['scan']);
+        }).catch((error) => {
+          // si la requête échoue :
+          mitt.emitter.emit('echo_toast_scan', "Lancement scan SNMP process");
+          console.log(error);
+        });
+      },
+      // fonction d'obtention d'info en NTP
+      getNTPScan : function(cible) {
+        mitt.emitter.emit('echo_toast_scan', "Lancement scan NTP");
+        axios({
+          method : 'POST',
+          url : '/json/scan_ntp',
+          headers: {'Content-Type': 'application/json'},
+          data : {'cible' : cible},
+        }).then((response) => {
+          // si la requête passe :          
+          mitt.emitter.emit('echo_toast_scan', "Réception scan NTP");
+          // on met à jour le node concerné via une fonction de sélection de node
+          this.updateNodebyIP(cible, 'ntp', response.data['scan']);
+        }).catch((error) => {
+          // si la requête échoue :
+          mitt.emitter.emit('echo_toast_scan', "Erreur scan NTP");
+          console.log(error);
+        });
+      },
+      // fonction d'obtention d'info sur un RDP
+      getRDPScan : function(cible) {
+        mitt.emitter.emit('echo_toast_scan', "Lancement scan RDP");
+        axios({
+          method : 'POST',
+          url : '/json/scan_rdp_info',
+          headers: {'Content-Type': 'application/json'},
+          data : {'cible' : cible},
+        }).then((response) => {
+          // si la requête passe :
+          mitt.emitter.emit('echo_toast_scan', "Réception scan RDP");
+          // on met à jour le node concerné via une fonction de sélection de node
+          this.updateNodebyIP(cible, 'rdp_info', response.data['scan']);
+        }).catch((error) => {
+          // si la requête échoue :
+          mitt.emitter.emit('echo_toast_scan', "Erreur scan RDP");
+          console.log(error);
+        });
+      },
+      // fonction d'obtention d'info via traceroute
+      getTraceCibleScan : function(cible) {
+        mitt.emitter.emit('echo_toast_scan', "Lancement scan trace");
+        axios({
+          method : 'POST',
+          url : '/json/trace_scan',
+          headers: {'Content-Type': 'application/json'},
+          data : {'cible' : cible},
+        }).then((response) => {
+          // si la requête passe :          
+          mitt.emitter.emit('echo_toast_scan', "Réception scan trace");
+          // on met à jour le node concerné via une fonction de sélection de node
+          this.createCytoTraceGraph(response.data);
+        }).catch((error) => {
+          // si la requête échoue :
+          mitt.emitter.emit('echo_toast_scan', "Erreur scan trace");
+          console.log(error);
+        });
+      },
+
+
       //// fonctions du menu de découverte général
       // fonction d'obtention d'IP des réseaux locaux via traceroute
       getTracerouteLocalScan : function() {
@@ -372,6 +581,10 @@ export default Vue.createApp({
       receiveEmitRequestLocalScan : function(args) {
         console.log(args);
         this.listLocalScanFunc[args.type](args.cible);
+      },
+      receiveEmitRequestMachineScan : function(args) {
+        console.log(args);
+        this.listMachineScanFunc[args.type](args.cible);
       },
       receiveEmitRequestGeneralScan : function(args) {
         console.log(args);
@@ -639,6 +852,26 @@ export default Vue.createApp({
       },
       
       //// fonction utiles de manipulation du graph et des éléments réseau
+      // fonction de mise à jour d'un noeud spécifique
+      updateNodebyIP : function(ip_node, update_key, update_data) {
+        console.log(this.cyto);
+        console.log(ip_node);
+        // on cherche le noeud à updater par IP
+        let node_update = this.cyto.elements("node[data_ip = '" + ip_node + "']");
+        // on met la donnée dans la key du node depuis data
+        if(node_update.length != 0) {
+          node_update.data('data')[update_key] = update_data;
+        }
+        console.log(node_update);
+      },
+      //fonction d'ajout du profiling à l'OS
+      updateNodeOS : function(ip_node, profiling_data) {
+        let node_update = this.cyto.elements("node[data_ip = '" + ip_node + "']");
+        // on vérifie que le noeud existe avant d'y ajouter des choses
+        if(node_update.length != 0) {
+          node_update.data('data')['OS'] = profiling_data.osfamily;
+        }
+      },
       // fonction de récupération d'un ID de node via une recherche par IP
       getNodeIdByIP : function(ip) {
         return this.cyto.elements('node[data_ip = "' + ip + '"]').data('id');

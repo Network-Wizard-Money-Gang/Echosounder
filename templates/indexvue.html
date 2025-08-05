@@ -131,16 +131,16 @@
             <div class="container echo_menu_subtitle"></div>
           </div>
           <div class="container echo_scan_panel"> 
-            <div class="echo_button_scan hvr-hollow" @click="clickScanProfiling()">Scan profiling</div>
-            <div class="echo_button_scan hvr-hollow" @click="clickScanReversePTR()">Scan Reverse PTR</div>
-            <div class="echo_button_scan hvr-hollow" @click="clickScanSSHFingerprint()">Scan SSH fingerprint</div>
-            <div class="echo_button_scan hvr-hollow" @click="clickScanSMB()">Scan SMB</div>
-            <div class="echo_button_scan hvr-hollow" @click="clickScanSNMP()">Scan SNMP</div>
-            <div class="echo_button_scan hvr-hollow" @click="clickScanSNMPnetstat()">Scan SNMP netstat</div>
-            <div class="echo_button_scan hvr-hollow" @click="clickScanSNMPprocess()">Scan SNMP process</div>
-            <div class="echo_button_scan hvr-hollow" @click="clickScanNTP()">Scan NTP</div>
-            <div class="echo_button_scan hvr-hollow" @click="clickScanRDP()">Scan RDP</div>
-            <div class="echo_button_scan hvr-hollow" @click="clickScanTracerouteCible()">Scan traceroute</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanMachine('request_profiling_scan')">Scan profiling</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanMachine('request_reverse_ptr_scan')">Scan Reverse PTR</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanMachine('request_fingerprint_ssh_scan')">Scan SSH fingerprint</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanMachine('request_smb_scan')">Scan SMB</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanMachine('request_snmp_scan')">Scan SNMP</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanMachine('request_snmp_netstat_scan')">Scan SNMP netstat</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanMachine('request_snmp_process_scan')">Scan SNMP process</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanMachine('request_ntp_scan')">Scan NTP</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanMachine('request_rdp_scan')">Scan RDP</div>
+            <div class="echo_button_scan hvr-hollow" @click="clickScanMachine('request_trace_cible_scan')">Scan traceroute</div>
             <div class="container echo_menu_subtitle"></div>
             <div class="container echo_scan_cible" v-show="portShow" ><input class="echo_input_effect" type="text" name="cible_port_1" placeholder="ip" v-model="portStart" required>
               <label for="name" class="echo_input_effect_label">PORT MIN</label>
@@ -220,7 +220,7 @@
       <div class="flex flex-wrap echo_dialog_node" v-if="showDialogNote">
         <div class="container echo_menu_title">Ajout de commentaire</div>
         <!-- juste un bouton pour tout supprimer-->
-        <div class="hvr-hollow echo_note_cross" ng-click="showDialogNote = false"><i class="las la-times"></i></div>
+        <div class="hvr-hollow echo_note_cross" @click="showDialogNote = false"><i class="las la-times"></i></div>
         <div class="container d-flex flex-wrap" ng-show="nodesAllTypeSelected.length > 0">
           <span ng-repeat="i in nodesAllTypeSelected" class="echo_ip_selected">{{"{{i}}"}} <i class="las la-window-close" ng-click="deleteNodesSelected(i)"></i></span>
           <div class="echo_button_scan hvr-hollow" ng-click="deleteAllNodesSelected()"><i class="las la-trash-alt"></i> Effacer sélection</div>
@@ -231,13 +231,13 @@
         <div class="container echo_menu_subtitle"></div>
         <div class="form-group echo_note_form">
           <label>Titre : </label>
-          <input type="texte" class="form-control" placeholder="titre du noeud note" ng-model="titreNote">
+          <input type="texte" class="form-control" placeholder="titre du noeud note" v-model="titreNote">
           <label>Commentaire : </label>
-          <textarea class="form-control echo_note_textarea" placeholder="texte du noeud note" ng-model="texteNote"></textarea>
+          <textarea class="form-control echo_note_textarea" placeholder="texte du noeud note" v-model="texteNote"></textarea>
         </div>
         <div class="container echo_menu_subtitle"></div>
         <div class="d-flex flex-wrap">
-          <div class="echo_button_scan hvr-hollow" ng-click="addNoteValidate()">Valider</div>
+          <div class="echo_button_scan hvr-hollow" @click="addNoteValidate()">Valider</div>
         </div>
       </div>
     </div>
