@@ -92,5 +92,11 @@ export default Vue.createApp({
       console.log("emit global traceroute scan request");
       mitt.emitter.emit('scan_general', {type : 'request_resolve_as_scan'});
     },
+    // fonction de reset du panel : 
+    resetPanel : function() {
+      this.showMenu1 = false;
+      this.showMenu2 = false;
+      this.showMenu3 = false;
+    }
   },
 })

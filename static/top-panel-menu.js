@@ -100,5 +100,9 @@ export default Vue.createApp({
           // on envoie au graph l'indication d'un rechargement de style nécessaire
           mitt.emitter.emit('reloadStyle', {'theme' : themeName});
         },
+        // fonction de reset du panel : 
+        resetPanel : function() {
+          this.menuConf = false;
+        }
     },
 })

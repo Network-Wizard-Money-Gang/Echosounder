@@ -159,6 +159,11 @@ mitt.emitter.on('request_import_json', (file) => graphNetworkApp.importJson(file
 // fonction générales de manipulation du graph par les menu
 mitt.emitter.on('request_action_graph', (action) => graphNetworkApp.actionGraph(action));
 mitt.emitter.on('send_selected_ip', (listip) => leftPanelMenuApp.setIPListScan(listip));
+mitt.emitter.on('reset_all_panels', () => {
+  topPanelMenuApp.resetPanel();
+  leftPanelMenuApp.resetPanel();
+  rightPanelMenuApp.resetPanel();
+})
 
 // fonction de mise à jour du thème graphique pour cytoscape
 mitt.emitter.on('reloadStyle', (theme) => graphNetworkApp.loadStyle());

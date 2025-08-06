@@ -81,5 +81,11 @@ export default Vue.createApp({
     actionGraph : function(action) {
       mitt.emitter.emit('request_action_graph', action);
     },
+    // fonction de reset du panel : 
+    resetPanel : function() {
+      this.showMenu1 = false;
+      this.showMenu2 = false;
+      this.showMenu3 = false;
+    }
   },
 })

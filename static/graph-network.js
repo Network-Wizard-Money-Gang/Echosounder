@@ -23,11 +23,10 @@ export default Vue.createApp({
         mitt.emitter.emit("graph_service", evt.target.data());
       }
     });
-    this.cyto.on('dblclick', function(evt){
-      console.log('double clic reset panels')
-      // on envoie au parent le noeud à afficher :
-      // TODO
-      //$scope.$parent.$broadcast("resetPanels");
+    this.cyto.on('dblclick', (evt) => {
+      console.log('double clic reset panels');
+      mitt.emitter.emit("reset_all_panels");
+      this.actionGraph("actualize");
     });
     this.loadStyle();
     console.log(this);
@@ -1050,6 +1049,6 @@ export default Vue.createApp({
           console.log(list_ip);
           mitt.emitter.emit("send_selected_ip", list_ip);
         }
-      }
+      },
   },
 })
