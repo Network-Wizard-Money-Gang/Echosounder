@@ -55,7 +55,6 @@ const app = Vue.createApp({
         mitt.emitter.emit('toppanelmenu_health', ['nmap', response.data.nmap]);
       })
       .catch(function (error) {
-        // TODO envoyer en toast une erreur personnalisé nmap
         console.log(error);
         mitt.emitter.emit('notification_error', "API nmap : " + error);
         mitt.emitter.emit('toppanelmenu_health', ['nmap', 'false']);
@@ -152,6 +151,8 @@ mitt.emitter.on('graph_service', (service) => rightPanelMenuApp.addOrUpdateServi
 mitt.emitter.on('scan_local', (scanobj) => graphNetworkApp.receiveEmitRequestLocalScan(scanobj));
 mitt.emitter.on('scan_general', (scanobj) => graphNetworkApp.receiveEmitRequestGeneralScan(scanobj));
 mitt.emitter.on('scan_machine', (scanobj) => graphNetworkApp.receiveEmitRequestMachineScan(scanobj));
+mitt.emitter.on('scan_machine_port', (scanobj) => graphNetworkApp.receiveEmitRequestMachinePortScan(scanobj));
+
 
 // fonction d'envoie des demandes d'export/import au graph
 mitt.emitter.on('request_export', (typeexport) => graphNetworkApp.exportGraph(typeexport));

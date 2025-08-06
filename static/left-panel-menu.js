@@ -61,6 +61,29 @@ export default Vue.createApp({
         mitt.emitter.emit('scan_machine', {type : typescan, cible : this.machineCible});
       }
     },
+    //// fonction de scan par ranges de port
+    // fonction d'affichage de range de port et de scan de port spécifiques
+    clickScanServices : function() {
+      if (this.portShow){
+        console.log("emit services scan request");
+        if(this.nodesSelected.length > 1) {
+          mitt.emitter.emit('scan_machine_port', {type : 'request_services_scan', cible : this.nodesSelected, port_start : this.portStart, port_end : this.portEnd});
+        }else {
+          mitt.emitter.emit('scan_machine_port', {type : 'request_services_scan', cible : this.machineCible, port_start : this.portStart, port_end : this.portEnd});
+        }
+      }else{
+        this.portShow = true;
+      }
+    },
+    // fonction de scan rapide de port
+    clickScanFastServices : function() {
+      console.log("emit services fast scan request");
+      if(this.nodesSelected.length > 1) {
+        mitt.emitter.emit('scan_machine_port', {type : 'request_services_fast_scan', cible : this.nodesSelected});
+      }else {
+        mitt.emitter.emit('scan_machine_port', {type : 'request_services_fast_scan', cible : this.machineCible});
+      }
+    },
     // fonction de récupération de liste d'IP à scanner à partir du graph : 
     getSelectionScan : function() {
       console.log("emit get selected");

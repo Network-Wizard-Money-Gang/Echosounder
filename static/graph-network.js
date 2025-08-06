@@ -24,7 +24,6 @@ export default Vue.createApp({
       }
     });
     this.cyto.on('dblclick', (evt) => {
-      console.log('double clic reset panels');
       mitt.emitter.emit("reset_all_panels");
       this.actionGraph("actualize");
     });
@@ -67,6 +66,10 @@ export default Vue.createApp({
         'request_ntp_scan' : this.getNTPScan,
         'request_rdp_scan' : this.getRDPScan,
         'request_trace_cible_scan' : this.getTraceCibleScan,
+      },
+      listMachinePortScanFunc :{
+        'request_services_scan' : this.getServicesScan,
+        'request_services_fast_scan' : this.getServicesFastScan,
       },
       listGlobalFunc : {
         'request_traceroute_local_scan' : this.getTracerouteLocalScan, 
@@ -225,7 +228,6 @@ export default Vue.createApp({
         }).then((response) => {
           // si la requête passe :
           mitt.emitter.emit('echo_toast_scan', "réception d'un scan ARP");
-          console.log(response.data);
           // on appel la fonction de création de graphs :
           this.createCytoVlanGraph(response.data);
         }).catch((error) => {
@@ -245,7 +247,6 @@ export default Vue.createApp({
           }).then((response) => {
             // si la requête passe :
             mitt.emitter.emit('echo_toast_scan', "réception d'un scan FastPing");
-            console.log(response.data);
             // on appel la fonction de création de graphs :
             this.createCytoVlanGraph(response.data);
           }).catch((error) => {
@@ -266,7 +267,6 @@ export default Vue.createApp({
         }).then((response) => {
           // si la requête passe :
           mitt.emitter.emit('echo_toast_scan', "réception d'un scan DHCP CIDR");
-          console.log(response.data);
           // on appel la fonction de création de graphs :
           this.createCytoCIDRGraph(response.data, cible);
         }).catch((error) => {
@@ -286,7 +286,6 @@ export default Vue.createApp({
         }).then((response) => {
           // si la requête passe :
           mitt.emitter.emit('echo_toast_scan', "réception d'un scan Traceroute CIDR");
-          console.log(response.data);
           // on appel la fonction de création de graphs :
           this.createCytoTraceCIDRGraph(response.data);
         }).catch((error) => {
@@ -489,7 +488,44 @@ export default Vue.createApp({
           console.log(error);
         });
       },
-
+      // fonctions de listage des services machine (par port)
+      getServicesScan : function(cible, pstart, pend) {
+        mitt.emitter.emit('echo_toast_scan', "Lancement scan Services custom");
+        axios({
+          method : 'POST',
+          url : '/json/services_scan',
+          headers: {'Content-Type': 'application/json'},
+          data : {'cible' : cible, 'port_start' : pstart, 'port_end' : pend},
+        }).then((response) => {
+          // si la requête passe :          
+          mitt.emitter.emit('echo_toast_scan', "Réception scan Services custom");
+          // on met à jour le graph en ajoutant des noeuds type service lié à la cible
+          this.createCytoServiceGraph(response.data['scan']);
+        }).catch((error) => {
+          // si la requête échoue :
+          mitt.emitter.emit('echo_toast_scan', "Erreur scan Services custom");
+          console.log(error);
+        });
+      },
+      // fonctions de listage des services machine (par port)
+      getServicesFastScan : function(cible, pstart, pend) {
+        mitt.emitter.emit('echo_toast_scan', "Lancement scan Services Fast");
+        axios({
+          method : 'POST',
+          url : '/json/services_fast_scan',
+          headers: {'Content-Type': 'application/json'},
+          data : {'cible' : cible},
+        }).then((response) => {
+          // si la requête passe :
+          mitt.emitter.emit('echo_toast_scan', "Réception scan Services Fast");
+          // on met à jour le graph en ajoutant des noeuds type service lié à la cible
+          this.createCytoServiceGraph(response.data['scan']);
+        }).catch((error) => {
+          // si la requête échoue :
+          mitt.emitter.emit('echo_toast_scan', "Erreur scan Services Fast");
+          console.log(error);
+        });
+      },
 
       //// fonctions du menu de découverte général
       // fonction d'obtention d'IP des réseaux locaux via traceroute
@@ -563,7 +599,6 @@ export default Vue.createApp({
             }).then((response) => {
               // si la requête passe :              
               mitt.emitter.emit('echo_toast_scan', "réception d'un scan Traceroute CIDR");
-              console.log(response.data);
               // on appel la fonction de création de graphs :
               this.createCytoTraceGraph(response.data);
             }).catch((error) => {
@@ -577,22 +612,27 @@ export default Vue.createApp({
 
       // fonction d'assignation des signaux aux fonctions adéquats
       receiveEmitRequestLocalScan : function(args) {
-        console.log(args);
         this.listLocalScanFunc[args.type](args.cible);
       },
       receiveEmitRequestMachineScan : function(args) {
-        console.log(args);
         if(Array.isArray(args.cible)) {
           args.cible.forEach((cible) => {
-            console.log(args.type);
             this.listMachineScanFunc[args.type](cible);
           })
         }else {
           this.listMachineScanFunc[args.type](args.cible);
         }
       },
+      receiveEmitRequestMachinePortScan : function(args) {
+        if(Array.isArray(args.cible)) {
+          args.cible.forEach((cible) => {
+            this.listMachinePortScanFunc[args.type](cible, args.port_start, args.port_end);
+          })
+        }else {
+          this.listMachinePortScanFunc[args.type](args.cible, args.port_start, args.port_end);
+        }
+      },
       receiveEmitRequestGeneralScan : function(args) {
-        console.log(args);
         this.listGlobalFunc[args.type]();
       },
 
@@ -769,12 +809,8 @@ export default Vue.createApp({
         for(let key in scan_data.scan){
           if(key == 0) {
           }else {
-            console.log(scan_data.scan);
-            console.log(key);
             let id_last_node = this.getNodeIdByIP(scan_data.scan[key-1][0]);
-            console.log(id_last_node);
             let id_node = this.getNodeIdByIP(scan_data.scan[key][0]);
-            console.log(id_node);
             let last_node_typeip = ipaddr.parse(id_last_node.split('\n')[0]).range();
             let node_typeip = ipaddr.parse(id_node.split('\n')[0]).range();
             if((last_node_typeip == 'private' & node_typeip != 'private') |
@@ -855,12 +891,62 @@ export default Vue.createApp({
         this.layout = this.cyto.layout(this.options);
         this.layout.run();
       },
+      // fonction de création du graph à partir d'un scan d'une IP ressortant les services
+      createCytoServiceGraph : function(scan_data) {
+        // on crée les listes de noeuds/liens qu'on va pousser dans le graph
+        let nodes_services = [];
+        let edges_services = [];
+
+        scan_data.forEach((ip_scanned) => {
+            // on cherche le noeud auquel rattacher les services
+          let node_update = this.cyto.elements("node[data_ip = '" + ip_scanned.IP + "']");
+          // on crée les noeuds de type services associés au noeud IP
+          if(node_update.length != 0) { // on vérifie qu'on a trouvé l'IP (on sais jamais)
+            // on accède aux données listés 
+            let id_node = (ip_scanned.IP + ':' + ip_scanned.port + ' ' + ip_scanned.result.cpe);
+            let label_node = ip_scanned.port + ' ' + ip_scanned.result.product;
+            if(ip_scanned.result.product == "") {
+              label_node = ip_scanned.port + ' ' + ip_scanned.result.name;
+            }
+            nodes_services.push(
+              {
+                group:'nodes',
+                data: {
+                  id : id_node,
+                  label : label_node,
+                  type : 'Service',
+                  data : ip_scanned.result,
+                  data_ip : ip_scanned.IP,
+                  parent : node_update.data('parent'),
+                },
+              }
+            );
+            edges_services.push(
+              {
+                group:'edges',
+                data : {
+                  id : ('link ' + node_update.data('id') + " " + id_node + " "),
+                  source : node_update.data('id'),
+                  target : id_node,
+                  type: 'ServicetoIP',
+                  parent : node_update.data('parent'),
+                }
+              }
+            );
+          }
+        });
+        // on ajoute l'ensemble des services au graph
+        this.cyto.add(nodes_services);
+        // on ajoute l'ensemble des lien au graph
+        this.cyto.add(edges_services);
+        // on actualise la vue
+        this.layout = this.cyto.layout(this.options);
+        this.layout.run();
+      },
       
       //// fonction utiles de manipulation du graph et des éléments réseau
       // fonction de mise à jour d'un noeud spécifique
       updateNodebyIP : function(ip_node, update_key, update_data) {
-        console.log(this.cyto);
-        console.log(ip_node);
         // on cherche le noeud à updater par IP
         let node_update = this.cyto.elements("node[data_ip = '" + ip_node + "']");
         // on met la donnée dans la key du node depuis data
@@ -1046,9 +1132,8 @@ export default Vue.createApp({
           this.cyto.elements('node[type="IP"]:selected').forEach(function(node) {
             list_ip.push(node.data('data_ip'));
           });
-          console.log(list_ip);
           mitt.emitter.emit("send_selected_ip", list_ip);
         }
       },
   },
-})
+});
