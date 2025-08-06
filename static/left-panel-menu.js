@@ -55,7 +55,29 @@ export default Vue.createApp({
     // fonction de scan machines
     clickScanMachine : function(typescan) {
       console.log("emit scan machine " + typescan);
-      mitt.emitter.emit('scan_machine', {type : typescan, cible : this.machineCible});
+      if(this.nodesSelected.length > 1) {
+        mitt.emitter.emit('scan_machine', {type : typescan, cible : this.nodesSelected});
+      }else {
+        mitt.emitter.emit('scan_machine', {type : typescan, cible : this.machineCible});
+      }
+    },
+    // fonction de récupération de liste d'IP à scanner à partir du graph : 
+    getSelectionScan : function() {
+      console.log("emit get selected");
+      mitt.emitter.emit('request_action_graph', 'get_selected');
+    },
+    setIPListScan : function(list_ip) {
+      console.log(list_ip);
+      this.nodesSelected = list_ip;
+    },
+    deleteIPSelected : function(selectedIP) {
+      let index = this.nodesSelected.indexOf(selectedIP);
+      if(index != -1) {
+        this.nodesSelected.splice(index, 1);
+      }
+    },
+    deleteAllIPSelected : function() {
+      this.nodesSelected = [];
     },
     // fonctions de scan de placement étendue (global)
     clickTracerouteLocal : function() {

@@ -3,7 +3,6 @@ import mitt from './emitter.js';
 const { createApp } = Vue;
 
 export default Vue.createApp({
-
   mounted() {
     //lancement de la fonction de création du graph
     mitt.emitter.emit('parent', "AppVue Graph créée");
@@ -33,50 +32,50 @@ export default Vue.createApp({
     this.loadStyle();
     console.log(this);
   },
-    data() {
-      return {
-        // ici on ajoute les variables manipulables du graph
-        rootColor : getComputedStyle(document.documentElement),
-        cyto : {},
-        options : {
-          name: 'fcose', // cose est quand même pas mal...
-          fit: true,  // Whether to fit the network view after when done
-          padding: 30,
-          animate: true, // TODO : l'animation est constante, mais la force n'est pas recalculé, trouvé un moyen pour que ça soit le cas
-          animationDuration: 1000,
-          animationEasing: 'ease-out',
-          //infinite: 'end', // OW SHI__
-          nodeDimensionsIncludeLabels: true, // OUUUIIIIII
-          randomize: true, // ça semble mettre les noeud dans leur ordre d'arrivée, ça me plait.
-          packComponents: true,
-        },
-        styles : [],
-        layout : undefined,
-        listLocalScanFunc : {
-          'request_arp_scan' : this.getARPScan,
-          'request_fast_ping' : this.getFastScan,
-          'request_dhcp_cidr_scan' : this.getDHCP_CIDRScan,
-          'request_traceroute_cidr_scan' : this.getTracerouteCIDRScan,
-        },
-        listMachineScanFunc :{
-          'request_profiling_scan' : this.getProfilingScan,
-          'request_reverse_ptr_scan' : this.getReversePTRScan,
-          'request_fingerprint_ssh_scan' : this.getFingerprintSSHScan,
-          'request_smb_scan' : this.getSMBScan,
-          'request_snmp_scan' : this.getSNMPScan,
-          'request_snmp_netstat_scan' : this.getSNMPnetstatScan,
-          'request_snmp_process_scan' : this.getSNMPprocessScan,
-          'request_ntp_scan' : this.getNTPScan,
-          'request_rdp_scan' : this.getRDPScan,
-          'request_trace_cible_scan' : this.getTraceCibleScan,
-        },
-        listGlobalFunc : {
-          'request_traceroute_local_scan' : this.getTracerouteLocalScan, 
-          'request_traceroute_global_scan' : this.getTracerouteGlobalScan,
-          'request_resolve_as_scan' : this.getResolveAS,
-        },
-      }
-    },
+  data() {
+    return {
+      // ici on ajoute les variables manipulables du graph
+      rootColor : getComputedStyle(document.documentElement),
+      cyto : {},
+      options : {
+        name: 'fcose', // cose est quand même pas mal...
+        fit: true,  // Whether to fit the network view after when done
+        padding: 30,
+        animate: true, // TODO : l'animation est constante, mais la force n'est pas recalculé, trouvé un moyen pour que ça soit le cas
+        animationDuration: 1000,
+        animationEasing: 'ease-out',
+        //infinite: 'end', // OW SHI__
+        nodeDimensionsIncludeLabels: true, // OUUUIIIIII
+        randomize: true, // ça semble mettre les noeud dans leur ordre d'arrivée, ça me plait.
+        packComponents: true,
+      },
+      styles : [],
+      layout : undefined,
+      listLocalScanFunc : {
+        'request_arp_scan' : this.getARPScan,
+        'request_fast_ping' : this.getFastScan,
+        'request_dhcp_cidr_scan' : this.getDHCP_CIDRScan,
+        'request_traceroute_cidr_scan' : this.getTracerouteCIDRScan,
+      },
+      listMachineScanFunc :{
+        'request_profiling_scan' : this.getProfilingScan,
+        'request_reverse_ptr_scan' : this.getReversePTRScan,
+        'request_fingerprint_ssh_scan' : this.getFingerprintSSHScan,
+        'request_smb_scan' : this.getSMBScan,
+        'request_snmp_scan' : this.getSNMPScan,
+        'request_snmp_netstat_scan' : this.getSNMPnetstatScan,
+        'request_snmp_process_scan' : this.getSNMPprocessScan,
+        'request_ntp_scan' : this.getNTPScan,
+        'request_rdp_scan' : this.getRDPScan,
+        'request_trace_cible_scan' : this.getTraceCibleScan,
+      },
+      listGlobalFunc : {
+        'request_traceroute_local_scan' : this.getTracerouteLocalScan, 
+        'request_traceroute_global_scan' : this.getTracerouteGlobalScan,
+        'request_resolve_as_scan' : this.getResolveAS,
+      },
+    }
+  },
     methods: {
       // fonction de création/mise à jour du thème
       loadStyle : function() {
@@ -584,7 +583,14 @@ export default Vue.createApp({
       },
       receiveEmitRequestMachineScan : function(args) {
         console.log(args);
-        this.listMachineScanFunc[args.type](args.cible);
+        if(Array.isArray(args.cible)) {
+          args.cible.forEach((cible) => {
+            console.log(args.type);
+            this.listMachineScanFunc[args.type](cible);
+          })
+        }else {
+          this.listMachineScanFunc[args.type](args.cible);
+        }
       },
       receiveEmitRequestGeneralScan : function(args) {
         console.log(args);
@@ -1029,13 +1035,20 @@ export default Vue.createApp({
       },
       // fonction exécutant une action sur le graph demandé par une autre app vuejs
       actionGraph : function(action) {
-        // todo
         if(action == "actualize") {
           this.layout = this.cyto.layout(this.options);
           this.layout.run();
         }
         if(action == "delete_selection") {
           this.cyto.elements('node:selected').remove();
+        }
+        if(action == "get_selected") {
+          let list_ip = [];
+          this.cyto.elements('node[type="IP"]:selected').forEach(function(node) {
+            list_ip.push(node.data('data_ip'));
+          });
+          console.log(list_ip);
+          mitt.emitter.emit("send_selected_ip", list_ip);
         }
       }
   },
