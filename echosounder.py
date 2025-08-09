@@ -190,11 +190,13 @@ def creation_data_nmap(ip_address) -> dict:
     scan_res_to_dict = json.loads(scan_res_to_str)
 
     try:
-        name: str = scan_res_to_dict["scan"][machine]["osmatch"][0]["name"]
-        vendor: str = scan_res_to_dict["scan"][machine]["osmatch"][0]["osclass"][0]["vendor"]
-        osfamily: str = scan_res_to_dict["scan"][machine]["osmatch"][0]["osclass"][0]["osfamily"]
-        accuracy: str = scan_res_to_dict["scan"][machine]["osmatch"][0]["accuracy"]
-    except:
+        name: str = scan_res_to_dict["scan"][ip_address]["osmatch"][0]["name"]
+        vendor: str = scan_res_to_dict["scan"][ip_address]["osmatch"][0]["osclass"][0]["vendor"]
+        osfamily: str = scan_res_to_dict["scan"][ip_address]["osmatch"][0]["osclass"][0]["osfamily"]
+        accuracy: str = scan_res_to_dict["scan"][ip_address]["osmatch"][0]["accuracy"]
+    except Exception as e:
+        print(e)
+        print(scan_res_to_dict)
         name = "unknown"
         vendor = "unknown"
         osfamily = "unknown"
