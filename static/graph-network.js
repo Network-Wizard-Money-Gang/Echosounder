@@ -986,10 +986,12 @@ export default Vue.createApp({
       },
       // fonction de complétion des ASN avec leur vrai noms :
       getResolveAS : function() {
+        console.log(this.cyto.elements('node[type = "AS"]'));
         this.cyto.elements('node[type = "AS"]').forEach(function(node) {
           if(node.data('as_resolution')){
             return; // si la résolution à déjà été faite, on s'épargne de la refaire
           }
+          console.log(node);
           // si il s'agit d'un multi-origin AS set, on fait deux requêtes, sinon une seule
           if(node.data('label').includes('_')){
             let list_asn = node.data('label').split('_');
@@ -1008,7 +1010,7 @@ export default Vue.createApp({
             // on récupère les info d'AS
             axios(req1).then((response) => {
                 // si la requête passe :
-                $scope.$parent.sendToastData('AS Resolution', "Récupération de donnée RDAP", 'echo_toast_scan');
+                //$scope.$parent.sendToastData('AS Resolution', "Récupération de donnée RDAP", 'echo_toast_scan');
                 // on les fout dans le label du noeud
                 if(node.data('label').includes(' ')) {
                   node.data('label', node.data('label') + " & " + response.data.name);
@@ -1019,14 +1021,14 @@ export default Vue.createApp({
                 node.data('as_resolution', true);
               }).catch((error) => {
                 // si la requête échoue :
-                $scope.$parent.sendToastData('AS Resolution', "erreur : " + error, 'echo_toast_error');
+                //$scope.$parent.sendToastData('AS Resolution', "erreur : " + error, 'echo_toast_error');
                 console.log(error);
               });
 
             // on récupère les info d'AS
             axios(req2).then((response) => {
               // si la requête passe :
-              $scope.$parent.sendToastData('AS Resolution', "Récupération de donnée RDAP", 'echo_toast_scan');
+              //$scope.$parent.sendToastData('AS Resolution', "Récupération de donnée RDAP", 'echo_toast_scan');
               // on les fout dans le label du noeud
               if(node.data('label').includes(' ')) {
                 node.data('label', node.data('label') + " & " + response.data.name);
@@ -1037,7 +1039,7 @@ export default Vue.createApp({
               node.data('as_resolution', true);
             }).catch((error) => {
               // si la requête échoue :
-              $scope.$parent.sendToastData('AS Resolution', "erreur : " + error, 'echo_toast_error');
+              //$scope.$parent.sendToastData('AS Resolution', "erreur : " + error, 'echo_toast_error');
               console.log(error);
             });
 
@@ -1051,14 +1053,14 @@ export default Vue.createApp({
             // on récupère les info d'AS
             axios(req).then((response) => {
               // si la requête passe :
-                $scope.$parent.sendToastData('AS Resolution', "Récupération de donnée RDAP", 'echo_toast_scan');
+                //$scope.$parent.sendToastData('AS Resolution', "Récupération de donnée RDAP", 'echo_toast_scan');
                 // on les fout dans le label du noeud
                 node.data('label', node.data('label') + " " + response.data.name);
                 // on spécifie que la résolution a été effectué
                 node.data('as_resolution', true);
               }).catch((error) => {
               // si la requête échoue :
-                $scope.$parent.sendToastData('AS Resolution', "erreur : " + error, 'echo_toast_error');
+                //$scope.$parent.sendToastData('AS Resolution', "erreur : " + error, 'echo_toast_error');
                 console.log(error);
               });
           }

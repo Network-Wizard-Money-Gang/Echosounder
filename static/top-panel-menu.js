@@ -1,4 +1,6 @@
 import mitt from './emitter.js';
+import { useStore } from './store.js';
+
 
 const { createApp } = Vue;
 
@@ -9,31 +11,33 @@ export default Vue.createApp({
     mitt.emitter.emit('parent', "AppVue TopPanel créée");
   },
     data() {
+      let store = useStore();
       return {
-          // visibilité du menu de configuration
+        store : store,
+        // visibilité du menu de configuration
         menuConf : false,
         // onglets du menu de configuration
         menuConfState : true,
         menuConfNetwork : false,
         menuConfTheme : false,
         // objet contenant l'état du système
-        health : {},
+        health : store.health,
         // liste des interfaces
-        interfaces : [],
+        interfaces : store.interfaces,
         // interface sélectionné
-        interface : "",
-        address_family : {},
-        listInterfaceIP : [],
-        interfaceData : {},
+        interface : store.interface,
+        address_family : store.address_family,
+        listInterfaceIP : store.listInterfaceIP,
+        interfaceData : store.interfaceData,
         // JSON d'IP à processer
-        jsonIP : undefined,
+        jsonIP : store.jsonIP,
         // liste des thèmes
         themes : [
           'darkgreen',
           'whiteblue',
           'whitedebug',
         ],
-        themeSelected : 'darkgreen',
+        themeSelected : store.themeSelected,
       }
     },
     methods: {
@@ -42,33 +46,32 @@ export default Vue.createApp({
             this.health[valuekey[0]] = valuekey[1];
             this.$forceUpdate();
         },
-        // fonction de mise à jour de list d'interface
-        updateInterfaces : function(interfacedata) {
-          this.interfaces = interfacedata;
-        },
         // fonction de mise à jour de liste de famille d'adresse
         updateAddrFamily : function(addressfamilydata) {
-          this.address_family = addressfamilydata;
+          this.store.address_family = addressfamilydata;
         },
         // fonction de récupération des "canaux" dispo sur une interface
         getInterfaceData : function() {
           console.log("fonction get interface data appelé");
-          if(this.interface == null) {
+          if(this.store.interface == null) {
             return; // on évite de requêter une absence d'interface.
           };
 
           axios({
             method : 'GET',
-            url : '/json/interface/' + this.interface,
+            url : '/json/interface/' + this.store.interface,
           })
           .then((response) => {
             // si la requête passe :
-            this.interfaceData = response.data;
-            let listInterfaceIPreturn = response.data[this.address_family['IPv4']]
+            console.log("getInterfaceData");
+            console.log(response.data);
+            this.store.interfaceData = response.data;
+            console.log(this.store);
+            let listInterfaceIPreturn = response.data[this.store.address_family['IPv4']]
             if(listInterfaceIPreturn != undefined) {
-              this.listInterfaceIP = listInterfaceIPreturn;
+              this.store.listInterfaceIP = listInterfaceIPreturn;
             }else {
-              this.listInterfaceIP = [];
+              this.store.listInterfaceIP = [];
             }
           })
           .catch(function (error) {
@@ -97,6 +100,8 @@ export default Vue.createApp({
         changeTheme : function(themeName) {
           document.documentElement.setAttribute('data-theme', themeName);
           localStorage.setItem('theme', themeName);
+          // on met à jour le store du thème
+          this.store.theme = themeName;
           // on envoie au graph l'indication d'un rechargement de style nécessaire
           mitt.emitter.emit('reloadStyle', {'theme' : themeName});
         },
@@ -105,4 +110,4 @@ export default Vue.createApp({
           this.menuConf = false;
         }
     },
-})
+});
