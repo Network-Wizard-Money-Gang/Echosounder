@@ -14,6 +14,7 @@
   --widget-background3 : #4b948c; /* var(--widget-background3) */
   --widget-strong-contour1 : #5c202a; /* var(--widget-strong-contour1) */
   --widget-strong-contour2 : #371921; /* var(--widget-strong-contour2) */
+  --widget-strong-contour3: #63bac2; /* var(--widget-strong-contour3) */
   --text1 : #a5b0a9; /* var(--text1) */
   --text2 : #abd6db; /* var(--text2) */
   --micro-text : #11998e; /* var(--micro-text) */
@@ -33,6 +34,7 @@
   --rgb-widget-background3 : 75, 148, 140; /* var(--rgb-widget-background3) */
   --rgb-widget-strong-contour1 : 92, 32, 42; /* var(--rgb-widget-strong-contour1) */
   --rgb-widget-strong-contour2 : 55, 25, 33; /* var(--rgb-widget-strong-contour2) */
+  --rgb-widget-strong-contour3: 99 186 194; /* var(--rgb-widget-strong-contour3) */
   --rgb-text1 : 165, 176, 169; /* var(--rgb-text1) */
   --rgb-text2 : 171, 214, 219; /* var(--rgb-text2) */
   --rgb-micro-text : 17, 153, 142; /* var(--rgb-micro-text) */

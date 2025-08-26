@@ -17,7 +17,7 @@ export default Vue.createApp({
   watch : {
     listToast : {
       handler : function(newListToast, oldListToast) {
-        console.log(newListToast);
+        //console.log(newListToast);
         if(newListToast.length == 0) {
           // on ne fait rien
         }else {

@@ -99,7 +99,6 @@ const app = Vue.createApp({
         mitt.emitter.emit('notification_info', "récupération list interfaces");
         mitt.emitter.emit('toppanelmenu_health', ['interfaces', 'true']);
         mitt.emitter.emit('toppanelmenu_interfaces', response.data);
-        console.log(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -128,10 +127,7 @@ const rightPanelMenuApp = rightPanelMenu.mount('#echo_panel_right');
 const notificationPanelMenuApp = notificationPanelMenu.mount('#echo_panel_notification');
 const graphNetworkApp = graphNetwork.mount('#placeNetwork');
 
-console.log('toppanel')
-console.log(topPanelMenuApp);
-
-mitt.emitter.on('parent', (texte) => EchoSounderApp.print_event(texte));
+//mitt.emitter.on('parent', (texte) => EchoSounderApp.print_event(texte));
 mitt.emitter.on('check_health', () => EchoSounderApp.getHealth());
 
 // events de notification en bas à droite

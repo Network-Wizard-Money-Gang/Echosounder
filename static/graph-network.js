@@ -198,17 +198,18 @@ export default Vue.createApp({
             selector: 'edge',
             css: {
               'line-color' : this.rootColor.getPropertyValue('--widget-background3'),
-              'target-arrow-color' : this.rootColor.getPropertyValue('--widget-strong-contour1'), 
+              'target-arrow-color' : this.rootColor.getPropertyValue('--widget-strong-contour3'), 
+              // 'target-arrow-color' : this.rootColor.getPropertyValue('--widget-strong-contour1'), 
               'curve-style': 'bezier',
               'target-arrow-shape': 'triangle',
-              'opacity' : 0.5,
+              'opacity' : 0.8,
             },
           },
           {
             selector: 'edge[typelink = "upstream"]',
             css: {
               'line-color' : this.rootColor.getPropertyValue('--widget-strong-contour2'),
-              'target-arrow-color' : this.rootColor.getPropertyValue('--widget-strong-contour1'), 
+              'target-arrow-color' : this.rootColor.getPropertyValue('--widget-strong-contour3'), 
               'width': 4, // épaisseur de l'edge sélectionné
               'opacity' : 0.8,
             },

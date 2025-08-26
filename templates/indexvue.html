@@ -48,22 +48,22 @@
         <div>
           <!-- affichage de l'état du backend -->
           <div class="d-flex flex-wrap" v-if="menuConfState">
-            <pre>{{"{{store.health}}"}}</pre>
+            <pre>{{"{{health}}"}}</pre>
           </div>
           <!-- règlages réseau -->
           <div class="d-flex flex-column" v-if="menuConfNetwork">
-            <select class="form-select echo_menu_top_option_interface"  v-model="store.interface" @change="getInterfaceData()">
+            <select class="form-select echo_menu_top_option_interface"  v-model="interface" @change="getInterfaceData()">
               <option disabled selected value> -- choisissez une interface -- </option>
-              <option v-for="interfaceF in store.interfaces" :key="interfaceF" :value="interfaceF">{{'{{interfaceF}}'}}</option>
+              <option v-for="interfaceF in interfaces" :key="interfaceF" :value="interfaceF">{{'{{interfaceF}}'}}</option>
             </select>
             <br>
             <br>
-            <pre :key="store.interfaceData">{{"{{JSON.stringify(store.interfaceData, null, 2) }}"}}</pre>
+            <pre>{{"{{interfaceData}}"}}</pre>
             <br>
             <div v-if="!(listInterfaceIP.length == 0)">
-              <select class="form-select echo_menu_top_option_interface" v-model="store.jsonIP" @change="jsonInterfaceToIPCIDR()">
+              <select class="form-select echo_menu_top_option_interface" v-model="jsonIP" @change="jsonInterfaceToIPCIDR()">
                 <option disabled selected value> -- choisissez une IP -- </option>
-                <option v-for="interfaceIP in store.listInterfaceIP" :value="interfaceIP">{{'{{interfaceIP}}'}}</option>
+                <option v-for="interfaceIP in listInterfaceIP" :value="interfaceIP">{{'{{interfaceIP}}'}}</option>
               </select>
             </div>
           </div>

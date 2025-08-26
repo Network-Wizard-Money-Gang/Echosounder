@@ -42,6 +42,10 @@ export default Vue.createApp({
             this.health[valuekey[0]] = valuekey[1];
             this.$forceUpdate();
         },
+        // fonction de mise à jour de list d'interface
+        updateInterfaces : function(interfacedata) {
+          this.interfaces = interfacedata;
+        },
         // fonction de mise à jour de liste de famille d'adresse
         updateAddrFamily : function(addressfamilydata) {
           this.address_family = addressfamilydata;
