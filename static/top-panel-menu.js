@@ -1,6 +1,4 @@
 import mitt from './emitter.js';
-import { useStore } from './store.js';
-
 
 const { createApp } = Vue;
 
@@ -11,9 +9,7 @@ export default Vue.createApp({
     mitt.emitter.emit('parent', "AppVue TopPanel créée");
   },
     data() {
-      let store = useStore();
       return {
-        store : store,
         // visibilité du menu de configuration
         menuConf : false,
         // onglets du menu de configuration
@@ -21,23 +17,23 @@ export default Vue.createApp({
         menuConfNetwork : false,
         menuConfTheme : false,
         // objet contenant l'état du système
-        health : store.health,
+        health : {},
         // liste des interfaces
-        interfaces : store.interfaces,
+        interfaces : [],
         // interface sélectionné
-        interface : store.interface,
-        address_family : store.address_family,
-        listInterfaceIP : store.listInterfaceIP,
-        interfaceData : store.interfaceData,
+        interface : "",
+        address_family : {},
+        listInterfaceIP : [],
+        interfaceData : {},
         // JSON d'IP à processer
-        jsonIP : store.jsonIP,
+        jsonIP : undefined,
         // liste des thèmes
         themes : [
           'darkgreen',
           'whiteblue',
           'whitedebug',
         ],
-        themeSelected : store.themeSelected,
+        themeSelected : 'darkgreen',
       }
     },
     methods: {
@@ -48,30 +44,28 @@ export default Vue.createApp({
         },
         // fonction de mise à jour de liste de famille d'adresse
         updateAddrFamily : function(addressfamilydata) {
-          this.store.address_family = addressfamilydata;
+          this.address_family = addressfamilydata;
         },
         // fonction de récupération des "canaux" dispo sur une interface
         getInterfaceData : function() {
           console.log("fonction get interface data appelé");
-          if(this.store.interface == null) {
+          if(this.interface == null) {
             return; // on évite de requêter une absence d'interface.
           };
 
           axios({
             method : 'GET',
-            url : '/json/interface/' + this.store.interface,
+            url : '/json/interface/' + this.interface,
           })
           .then((response) => {
             // si la requête passe :
             console.log("getInterfaceData");
-            console.log(response.data);
-            this.store.interfaceData = response.data;
-            console.log(this.store);
-            let listInterfaceIPreturn = response.data[this.store.address_family['IPv4']]
+            this.interfaceData = response.data;
+            let listInterfaceIPreturn = response.data[this.address_family['IPv4']]
             if(listInterfaceIPreturn != undefined) {
-              this.store.listInterfaceIP = listInterfaceIPreturn;
+              this.listInterfaceIP = listInterfaceIPreturn;
             }else {
-              this.store.listInterfaceIP = [];
+              this.listInterfaceIP  = [];
             }
           })
           .catch(function (error) {
@@ -100,8 +94,8 @@ export default Vue.createApp({
         changeTheme : function(themeName) {
           document.documentElement.setAttribute('data-theme', themeName);
           localStorage.setItem('theme', themeName);
-          // on met à jour le store du thème
-          this.store.theme = themeName;
+          // on met à jour le thème
+          this.theme = themeName;
           // on envoie au graph l'indication d'un rechargement de style nécessaire
           mitt.emitter.emit('reloadStyle', {'theme' : themeName});
         },

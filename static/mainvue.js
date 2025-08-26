@@ -1,15 +1,9 @@
-import { createPinia } from './js/pinia.esm-browser.js'
-import { useStore } from './store.js';
 import mitt from "./emitter.js";
 import topPanelMenu from "./top-panel-menu.js";
 import leftPanelMenu from "./left-panel-menu.js";
 import rightPanelMenu from "./right-panel-menu.js";
 import notificationPanelMenu from "./notification-panel-menu.js";
 import graphNetwork from "./graph-network.js";
-
-// pinia
-const Pinia = createPinia();
-
 
 const { createApp } = Vue;
 
@@ -22,11 +16,10 @@ const app = Vue.createApp({
     this.getHealth();
   },
 	data() {
-    let store = useStore();
 	  return {
-        // ici on ajoute les variables manipulables de la page
-        store : store,
-        
+        // ici on ajoute les variables manipulables de la page  
+        address_family: {},
+        cyto : {},      
 	  }
 	},
 	methods: {
@@ -42,15 +35,13 @@ const app = Vue.createApp({
         this.getHealthModules();
         this.getAddressFamily();
         this.getInterfaces();
-        //mitt.emitter.emit('toppanelmenu_health', ['status', 'ok']);
-        this.store.health.status = 'ok';
+        mitt.emitter.emit('toppanelmenu_health', ['status', 'ok']);
       })
       .catch(function (error) {
         // handle error
         console.log(error);
         mitt.emitter.emit('notification_error', "API health : " + error);
-        //mitt.emitter.emit('toppanelmenu_health', ['status', 'error']);
-        this.store.health.status = 'error';
+        mitt.emitter.emit('toppanelmenu_health', ['status', 'error']);
       });
     },
     // fonctions de vérification de présence de nmap
@@ -60,14 +51,12 @@ const app = Vue.createApp({
         url: '/json/health/nmap',
       })
       .then((response) => {
-        //mitt.emitter.emit('toppanelmenu_health', ['nmap', response.data.nmap]);
-        this.store.health.nmap = response.data.nmap;
+        mitt.emitter.emit('toppanelmenu_health', ['nmap', response.data.nmap]);
       })
       .catch(function (error) {
         console.log(error);
         mitt.emitter.emit('notification_error', "API nmap : " + error);
-        //mitt.emitter.emit('toppanelmenu_health', ['nmap', 'false']);
-        this.store.health.nmap = 'false';
+        mitt.emitter.emit('toppanelmenu_health', ['nmap', 'false']);
       });
     },
     // fonctions de vérification de présence des dépendances 
@@ -77,14 +66,12 @@ const app = Vue.createApp({
         url: '/json/health/dependencies',
       })
       .then((response) => {
-        //mitt.emitter.emit('toppanelmenu_health', ['dependencies', response.data.dependencies]);
-        this.store.health.dependencies = response.data.dependencies;
+        mitt.emitter.emit('toppanelmenu_health', ['dependencies', response.data.dependencies]);
       })
       .catch(function (error) {
         // handle error
         mitt.emitter.emit('notification_error', "API dependencies : " + error);
-        //mitt.emitter.emit('toppanelmenu_health', ['dependencies', 'error']);
-        this.store.health.dependencies = 'error';
+        mitt.emitter.emit('toppanelmenu_health', ['dependencies', 'error']);
       });
     },
     // fonction de récupération des familles d'adresses locales : 
@@ -94,8 +81,7 @@ const app = Vue.createApp({
         url: '/json/address_family',
       })
       .then((response) => {
-        //mitt.emitter.emit('toppanelmenu_addressfamily', response.data);
-        this.store.address_family = response.data;
+        mitt.emitter.emit('toppanelmenu_addressfamily', response.data);
       })
       .catch(function (error) {
         // handle error
@@ -111,20 +97,15 @@ const app = Vue.createApp({
       })
       .then((response) => {
         mitt.emitter.emit('notification_info', "récupération list interfaces");
-        //mitt.emitter.emit('toppanelmenu_health', ['interfaces', 'true']);
-        this.store.health.interfaces = 'true';
-        //mitt.emitter.emit('toppanelmenu_interfaces', response.data);
+        mitt.emitter.emit('toppanelmenu_health', ['interfaces', 'true']);
+        mitt.emitter.emit('toppanelmenu_interfaces', response.data);
         console.log(response.data);
-        this.store.interfaces = response.data;
-//        this.store.interfaces = response.data;
-        console.log(this.store);
       })
       .catch(function (error) {
         // handle error
         console.log(error);
         mitt.emitter.emit('notification_error', "API interface : " + error);
-        //mitt.emitter.emit('toppanelmenu_health', ['interfaces', 'false']);
-        this.store.health.interfaces = 'false';
+        mitt.emitter.emit('toppanelmenu_health', ['interfaces', 'false']);
       });
     },
     // fonction d'envoie sur console de message
@@ -138,14 +119,6 @@ const app = Vue.createApp({
 app.use(Quasar);
 Quasar.Lang.set(Quasar.Lang.fr)
 Quasar.IconSet.set(Quasar.IconSet.lineAwesome);
-
-// on assigne un unique store pinia à toutes les app : 
-app.use(Pinia);
-topPanelMenu.use(Pinia);
-leftPanelMenu.use(Pinia);
-rightPanelMenu.use(Pinia);
-notificationPanelMenu.use(Pinia);
-graphNetwork.use(Pinia);
 
 const EchoSounderApp = app.mount('#EchoSounderApp');
 
@@ -166,8 +139,9 @@ mitt.emitter.on('notification_info', (toast) => notificationPanelMenuApp.infoToa
 mitt.emitter.on('notification_error', (toast) => notificationPanelMenuApp.errorToast(toast));
 
 // events de mise à jour des info du menu haut à partir de getHealth
-//mitt.emitter.on('toppanelmenu_interfaces', (interfacedata) => topPanelMenuApp.updateInterfaces(interfacedata));
-//mitt.emitter.on('toppanelmenu_addressfamily', (addressfamilydata) => topPanelMenuApp.updateAddrFamily(addressfamilydata));
+mitt.emitter.on('toppanelmenu_health', (keyvalue) => topPanelMenuApp.addOrUpdateHealtValue(keyvalue));
+mitt.emitter.on('toppanelmenu_interfaces', (interfacedata) => topPanelMenuApp.updateInterfaces(interfacedata));
+mitt.emitter.on('toppanelmenu_addressfamily', (addressfamilydata) => topPanelMenuApp.updateAddrFamily(addressfamilydata));
 
 // fonction de mise à jour de cible pour leftPanelMenu
 mitt.emitter.on('leftpanelmenu_cible', (cible) => leftPanelMenuApp.addOrUpdateCible(cible));

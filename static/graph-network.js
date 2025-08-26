@@ -986,7 +986,6 @@ export default Vue.createApp({
       },
       // fonction de complétion des ASN avec leur vrai noms :
       getResolveAS : function() {
-        console.log(this.cyto.elements('node[type = "AS"]'));
         this.cyto.elements('node[type = "AS"]').forEach(function(node) {
           if(node.data('as_resolution')){
             return; // si la résolution à déjà été faite, on s'épargne de la refaire
