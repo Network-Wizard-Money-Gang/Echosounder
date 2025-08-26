@@ -15,7 +15,7 @@ Echosounder se place dans la phase de reconnaissance de ce cycle, en proposant u
 
 ## Screenshots
 
-![example_scan](https://user-images.githubusercontent.com/16328515/159520183-253055a4-925d-4077-98c0-49b56746299f.png)
+![example_scan](./doc/img/example.png)
 
 
 ### Ce que Echosounder permet
