@@ -1,7 +1,5 @@
 import mitt from './emitter.js';
 
-const { createApp } = Vue;
-
 export default Vue.createApp({
 
   mounted() {

@@ -1,6 +1,6 @@
 import mitt from './emitter.js';
+import {useStore} from './store.js';
 
-const { createApp } = Vue;
 
 export default Vue.createApp({
 
@@ -9,6 +9,7 @@ export default Vue.createApp({
     mitt.emitter.emit('parent', "AppVue TopPanel créée");
   },
     data() {
+      let store = useStore();
       return {
         // visibilité du menu de configuration
         menuConf : false,
@@ -17,23 +18,25 @@ export default Vue.createApp({
         menuConfNetwork : false,
         menuConfTheme : false,
         // objet contenant l'état du système
-        health : {},
+        health : store.health,
         // liste des interfaces
-        interfaces : [],
+        interfaces : store.interfaces,
         // interface sélectionné
-        interface : "",
-        address_family : {},
-        listInterfaceIP : [],
-        interfaceData : {},
+        interface : store.interface,
+        address_family : store.address_family,
+        listInterfaceIP : store.listInterfaceIP,
+        interfaceData : store.interfaceData,
         // JSON d'IP à processer
-        jsonIP : undefined,
+        jsonIP : store.jsonIP,
         // liste des thèmes
         themes : [
           'darkgreen',
           'whiteblue',
           'whitedebug',
         ],
-        themeSelected : 'darkgreen',
+        themeSelected : store.themeSelected,
+        // accès interne à l'objet store contenant tout les contextes partagés
+        store : store,
       }
     },
     methods: {
@@ -59,13 +62,15 @@ export default Vue.createApp({
 
           axios({
             method : 'GET',
-            url : '/json/interface/' + this.interface,
+            url : '/json/interface/' + this.store.interface,
           })
           .then((response) => {
             // si la requête passe :
             console.log("getInterfaceData");
-            this.interfaceData = response.data;
-            let listInterfaceIPreturn = response.data[this.address_family['IPv4']]
+            this.store.interfaceData = response.data;
+            //this.interfaceData = response.data;
+            let listInterfaceIPreturn = response.data[this.store.address_family['IPv4']]
+            // on utilise pas le store parce que la réactivité sur les listes est fuckup
             if(listInterfaceIPreturn != undefined) {
               this.listInterfaceIP = listInterfaceIPreturn;
             }else {
@@ -80,15 +85,14 @@ export default Vue.createApp({
         },
         // fonction de traitement du JSON d'une interface en IP/CIDR
         jsonInterfaceToIPCIDR : function() {
-          if(this.jsonIP == undefined) { return };
-         
+          if(this.store.jsonIP == undefined) { return };
           axios({
             method : 'POST',
             url : '/json/ipcidr',
             headers: {'Content-Type': 'application/json'},
-            data: {'ip' : this.jsonIP.addr, "cidr" : this.jsonIP.netmask},
+            data: {'ip' : this.store.jsonIP.addr, "cidr" : this.store.jsonIP.netmask},
           }).then((response) => {
-            mitt.emitter.emit('leftpanelmenu_cible', response.data.ipcidr);
+            this.store.$patch({cible : response.data.ipcidr});
           }).catch((error => {
             mitt.emitter.emit('notification_error', "API interfacetoipcidr : " + error);
             console.log(error);
@@ -101,7 +105,7 @@ export default Vue.createApp({
           // on met à jour le thème
           this.theme = themeName;
           // on envoie au graph l'indication d'un rechargement de style nécessaire
-          mitt.emitter.emit('reloadStyle', {'theme' : themeName});
+          this.store.graphNetworkApp.loadStyle();
         },
         // fonction de reset du panel : 
         resetPanel : function() {

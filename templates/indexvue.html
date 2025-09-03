@@ -48,20 +48,20 @@
         <div>
           <!-- affichage de l'état du backend -->
           <div class="d-flex flex-wrap" v-if="menuConfState">
-            <pre>{{"{{health}}"}}</pre>
+            <pre>{{"{{store.health}}"}}</pre>
           </div>
           <!-- règlages réseau -->
           <div class="d-flex flex-column" v-if="menuConfNetwork">
-            <select class="form-select echo_menu_top_option_interface"  v-model="interface" @change="getInterfaceData()">
+            <select class="form-select echo_menu_top_option_interface"  v-model="store.interface" @change="getInterfaceData()">
               <option disabled selected value> -- choisissez une interface -- </option>
-              <option v-for="interfaceF in interfaces" :key="interfaceF" :value="interfaceF">{{'{{interfaceF}}'}}</option>
+              <option v-for="interfaceF in store.interfaces" :key="interfaceF" :value="interfaceF">{{'{{interfaceF}}'}}</option>
             </select>
             <br>
             <br>
-            <pre>{{"{{interfaceData}}"}}</pre>
+            <pre>{{"{{store.interfaceData}}"}}</pre>
             <br>
             <div v-if="!(listInterfaceIP.length == 0)">
-              <select class="form-select echo_menu_top_option_interface" v-model="jsonIP" @change="jsonInterfaceToIPCIDR()">
+              <select class="form-select echo_menu_top_option_interface" v-model="store.jsonIP" @change="jsonInterfaceToIPCIDR()">
                 <option disabled selected value> -- choisissez une IP -- </option>
                 <option v-for="interfaceIP in listInterfaceIP" :value="interfaceIP">{{'{{interfaceIP}}'}}</option>
               </select>
@@ -102,7 +102,7 @@
           <!-- cible à scanner -->
           <div class="container echo_menu_title">Scan réseau CIDR</div>
           <div class="container echo_scan_cible">
-            <input class="echo_input_effect" type="text" name="cible_ip_cidr" placeholder="cidr" v-model="cible" required>
+            <input class="echo_input_effect" type="text" name="cible_ip_cidr" placeholder="cidr" v-model="store.cible" required>
             <label for="name" class="echo_input_effect_label">IP/CIDR</label>
           </div>
           <!-- Type de scan CIDR sur cible -->
@@ -122,7 +122,7 @@
           <div class="container echo_menu_title">Scan machine</div>
           <!-- Ensemble des boutons de scan d'une machine spécifique -->
           <div class="container echo_scan_cible" v-if="nodesSelected.length == 0">
-            <input class="echo_input_effect" type="text" name="cible_machine_cible" placeholder="ip" v-model="machineCible" required>
+            <input class="echo_input_effect" type="text" name="cible_machine_cible" placeholder="ip" v-model="store.machineCible" required>
             <label for="name" class="echo_input_effect_label">IP CIBLE</label>
           </div>
           <div class="container echo_scan_panel" v-else>
@@ -179,7 +179,7 @@
       <Transition name="slide-right">
         <div class="d-flex flex-wrap echo_menu_right echo_node_data" v-if="showMenu1">
           <div class="container echo_menu_title">Visualisation données de machines</div>
-          <pre>{{"{{nodedata }}"}}</pre>
+          <pre>{{"{{store.nodedata }}"}}</pre>
         </div>
       </Transition>
 
@@ -190,7 +190,7 @@
       <Transition name="slide-right">
         <div class="d-flex flex-wrap echo_menu_right" v-if="showMenu2">
           <div class="container echo_menu_title">Visualisation données de services</div>
-          <pre>{{"{{servicedata }}"}}</pre>
+          <pre>{{"{{store.servicedata }}"}}</pre>
         </div>
       </Transition>
 

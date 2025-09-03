@@ -1,6 +1,5 @@
 import mitt from './emitter.js';
-
-const { createApp } = Vue;
+import {useStore} from './store.js';
 
 export default Vue.createApp({
   mounted() {
@@ -11,26 +10,31 @@ export default Vue.createApp({
       container: document.getElementById('mynetwork')
     });
     // création des évènements du graph
-    this.cyto.on('tap', 'node', function(evt){
+    this.cyto.on('tap', 'node', (evt) => {
+      console.log(this);
       // on envoie aux apps vue le noeud à afficher :
       if(evt.target.data('type') == 'VLAN') {
-        mitt.emitter.emit("graph_vlan", evt.target.data());
+        this.store.leftPanelMenuApp.addOrUpdateCible(evt.target.data());
       }
       if(evt.target.data('type') == 'IP') {
-        mitt.emitter.emit("graph_ip", evt.target.data());
+        this.store.rightPanelMenuApp.addOrUpdateMachine(evt.target.data()); 
+        this.store.leftPanelMenuApp.addOrUpdateMachineCible(evt.target.data());
       }
       if(evt.target.data('type') == 'Service') {
-        mitt.emitter.emit("graph_service", evt.target.data());
+        this.store.rightPanelMenuApp.addOrUpdateService(evt.target.data());
       }
     });
     this.cyto.on('dblclick', (evt) => {
-      mitt.emitter.emit("reset_all_panels");
+      this.store.topPanelMenuApp.resetPanel();
+      this.store.leftPanelMenuApp.resetPanel();
+      this.store.rightPanelMenuApp.resetPanel();
       this.actionGraph("actualize");
     });
     this.loadStyle();
     console.log(this);
   },
   data() {
+    let store = useStore();
     return {
       // ici on ajoute les variables manipulables du graph
       rootColor : getComputedStyle(document.documentElement),
@@ -76,6 +80,7 @@ export default Vue.createApp({
         'request_traceroute_global_scan' : this.getTracerouteGlobalScan,
         'request_resolve_as_scan' : this.getResolveAS,
       },
+      store : store,
     }
   },
     methods: {
@@ -197,9 +202,8 @@ export default Vue.createApp({
           {
             selector: 'edge',
             css: {
-              'line-color' : this.rootColor.getPropertyValue('--widget-background3'),
+              'line-color' : this.rootColor.getPropertyValue('--widget-background2'),
               'target-arrow-color' : this.rootColor.getPropertyValue('--widget-strong-contour3'), 
-              // 'target-arrow-color' : this.rootColor.getPropertyValue('--widget-strong-contour1'), 
               'curve-style': 'bezier',
               'target-arrow-shape': 'triangle',
               'opacity' : 0.8,
@@ -208,7 +212,7 @@ export default Vue.createApp({
           {
             selector: 'edge[typelink = "upstream"]',
             css: {
-              'line-color' : this.rootColor.getPropertyValue('--widget-strong-contour2'),
+              'line-color' : this.rootColor.getPropertyValue('--widget-strong-contour3'),
               'target-arrow-color' : this.rootColor.getPropertyValue('--widget-strong-contour3'), 
               'width': 4, // épaisseur de l'edge sélectionné
               'opacity' : 0.8,
@@ -944,6 +948,45 @@ export default Vue.createApp({
         this.layout = this.cyto.layout(this.options);
         this.layout.run();
       },
+
+      // ajout d'un noeud de type note au graph 
+      addNote : function(targets, titre, texte) {
+        let node = [];
+        let edges = [];
+        // on ajoute le noeud de commentaire
+        node.push(
+          {
+            group:'nodes',
+            data: {
+              id : titre,
+              label : texte,
+              data: texte,
+              type : 'note',
+            },
+          }
+        );
+
+        // on ajoute les liens vers les targets
+        targets.forEach(function(target) {
+          edges.push({
+            group:'edges',
+            data : {
+              id : ('link ' + target + " " + titre + " "),
+              source : titre,
+              target : target,
+              type : 'notelink',
+            }
+          });
+        });
+
+        // on ajoute l'ensemble des ip au graph
+        this.cyto.add(node);
+        // on ajoute l'ensemble des lien au graph
+        this.cyto.add(edges);
+        // on actualise la vue
+        this.layout = this.cyto.layout(this.options);
+        this.layout.run();
+      },
       
       //// fonction utiles de manipulation du graph et des éléments réseau
       // fonction de mise à jour d'un noeud spécifique
@@ -980,8 +1023,11 @@ export default Vue.createApp({
         
         // maintenant, on doit comparer IP / range d'IP et le premier match renvoie son ID
         for (const element of listVLAN) {
-          if(ipaddr.parse(ip).match(ipaddr.parse(element[0]), element[1])) {
-            return element[0] + "/" + element[1];
+          if(element == null) {} // on dégage les valeurs nulles 
+          else {
+            if(ipaddr.parse(ip).match(ipaddr.parse(element[0]), element[1])) {
+              return element[0] + "/" + element[1];
+            }
           }
         }
       },
@@ -1134,7 +1180,7 @@ export default Vue.createApp({
           this.cyto.elements('node[type="IP"]:selected').forEach(function(node) {
             list_ip.push(node.data('data_ip'));
           });
-          mitt.emitter.emit("send_selected_ip", list_ip);
+          this.store.leftPanelMenuApp.setIPListScan(listip)
         }
       },
   },

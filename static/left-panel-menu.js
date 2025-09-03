@@ -1,6 +1,5 @@
 import mitt from './emitter.js';
-
-const { createApp } = Vue;
+import {useStore} from './store.js';
 
 export default Vue.createApp({
 
@@ -9,56 +8,59 @@ export default Vue.createApp({
     mitt.emitter.emit('parent', "AppVue LeftPanel créée");
   },
     data() {
+      let store = useStore();
       return {
         // ici on ajoute les variables manipulables du graph
         showMenu1 : false,
         showMenu2 : false,
         showMenu3 : false,
         // IP/CIDR de VLAN de base
-        cible : "192.168.1.0/24",
+        cible : store.cible,
         // IP de machine cible
-        machineCible : "",
+        machineCible : store.machineCible,
         // affichage de la range de port
         portShow : false,
         portStart : "0",
         portEnd : "400",
         // gestion des cibles
         nodesSelected : [],
+        // accès interne à l'objet store contenant tout les contextes partagés
+        store : store,
       }
     },
     methods: {
     // fonctions de mise à jour de VLAN cible
     addOrUpdateCible : function(cible) {
-      this.cible = cible.id;
+      this.store.cible = cible.id;
     },
     // fonctions de mise à jour de machine cible
     addOrUpdateMachineCible : function(machineCible) {
-      this.machineCible = machineCible.id.split('\n')[0]; // on est obligés de split car on a fait en sorte que l'id contienne l'IP et l'adresse mac
+      this.store.machineCible = machineCible.id.split('\n')[0]; // on est obligés de split car on a fait en sorte que l'id contienne l'IP et l'adresse mac
     },
     // fonctions de scan local
     clickScanARP : function() {
       console.log("emit arp scan request");
-      mitt.emitter.emit('scan_local', {type : 'request_arp_scan', cible : this.cible});
+      this.store.graphNetworkApp.receiveEmitRequestLocalScan({type : 'request_arp_scan', cible : this.store.cible});
     },
     clickFastPing : function() {
       console.log("emit fast ping request");
-      mitt.emitter.emit('scan_local', {type : 'request_fast_ping', cible : this.cible});
+      this.store.graphNetworkApp.receiveEmitRequestLocalScan({type : 'request_fast_ping', cible : this.store.cible});
     },
     clickScanDHCP : function() {
       console.log("emit dhcp cidr scan request");
-      mitt.emitter.emit('scan_local', {type : 'request_dhcp_cidr_scan', cible : this.cible});
+      this.store.graphNetworkApp.receiveEmitRequestLocalScan({type : 'request_dhcp_cidr_scan', cible : this.store.cible});
     },
     clickScanCIDRTraceroute : function() {
       console.log("emit trace cidr scan request");
-      mitt.emitter.emit('scan_local', {type : 'request_traceroute_cidr_scan', cible : this.cible});
+      this.store.graphNetworkApp.receiveEmitRequestLocalScan({type : 'request_traceroute_cidr_scan', cible : this.store.cible});
     },
     // fonction de scan machines
     clickScanMachine : function(typescan) {
       console.log("emit scan machine " + typescan);
       if(this.nodesSelected.length > 1) {
-        mitt.emitter.emit('scan_machine', {type : typescan, cible : this.nodesSelected});
+        this.store.graphNetworkApp.receiveEmitRequestMachineScan({type : typescan, cible : this.nodesSelected});
       }else {
-        mitt.emitter.emit('scan_machine', {type : typescan, cible : this.machineCible});
+        this.store.graphNetworkApp.receiveEmitRequestMachineScan({type : typescan, cible : this.store.machineCible});
       }
     },
     //// fonction de scan par ranges de port
@@ -67,9 +69,9 @@ export default Vue.createApp({
       if (this.portShow){
         console.log("emit services scan request");
         if(this.nodesSelected.length > 1) {
-          mitt.emitter.emit('scan_machine_port', {type : 'request_services_scan', cible : this.nodesSelected, port_start : this.portStart, port_end : this.portEnd});
+          this.store.graphNetworkApp.receiveEmitRequestMachinePortScan({type : 'request_services_scan', cible : this.nodesSelected, port_start : this.portStart, port_end : this.portEnd});
         }else {
-          mitt.emitter.emit('scan_machine_port', {type : 'request_services_scan', cible : this.machineCible, port_start : this.portStart, port_end : this.portEnd});
+          this.store.graphNetworkApp.receiveEmitRequestMachinePortScan({type : 'request_services_scan', cible : this.store.machineCible, port_start : this.portStart, port_end : this.portEnd});
         }
       }else{
         this.portShow = true;
@@ -79,15 +81,15 @@ export default Vue.createApp({
     clickScanFastServices : function() {
       console.log("emit services fast scan request");
       if(this.nodesSelected.length > 1) {
-        mitt.emitter.emit('scan_machine_port', {type : 'request_services_fast_scan', cible : this.nodesSelected});
+        this.store.graphNetworkApp.receiveEmitRequestMachinePortScan({type : 'request_services_fast_scan', cible : this.nodesSelected});
       }else {
-        mitt.emitter.emit('scan_machine_port', {type : 'request_services_fast_scan', cible : this.machineCible});
+        this.store.graphNetworkApp.receiveEmitRequestMachinePortScan({type : 'request_services_fast_scan', cible : this.store.machineCible});
       }
     },
     // fonction de récupération de liste d'IP à scanner à partir du graph : 
     getSelectionScan : function() {
       console.log("emit get selected");
-      mitt.emitter.emit('request_action_graph', 'get_selected');
+      this.store.graphNetworkApp.actionGraph('get_selected');
     },
     setIPListScan : function(list_ip) {
       console.log(list_ip);
@@ -105,15 +107,15 @@ export default Vue.createApp({
     // fonctions de scan de placement étendue (global)
     clickTracerouteLocal : function() {
       console.log("emit local traceroute scan request");
-      mitt.emitter.emit('scan_general', {type : 'request_traceroute_local_scan'});
+      this.store.graphNetworkApp.receiveEmitRequestGeneralScan({type : 'request_traceroute_local_scan'});
     },
     clickTracerouteGlobal : function() {
       console.log("emit global traceroute scan request");
-      mitt.emitter.emit('scan_general', {type : 'request_traceroute_global_scan'});
+      this.store.graphNetworkApp.receiveEmitRequestGeneralScan({type : 'request_traceroute_global_scan'});
     },
     clickResolveAS : function() {
       console.log("emit global traceroute scan request");
-      mitt.emitter.emit('scan_general', {type : 'request_resolve_as_scan'});
+      this.store.graphNetworkApp.receiveEmitRequestGeneralScan({type : 'request_resolve_as_scan'});
     },
     // fonction de reset du panel : 
     resetPanel : function() {

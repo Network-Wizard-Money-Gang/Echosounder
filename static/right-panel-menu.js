@@ -1,6 +1,5 @@
 import mitt from './emitter.js';
-
-const { createApp } = Vue;
+import {useStore} from './store.js';
 
 export default Vue.createApp({
 
@@ -9,6 +8,7 @@ export default Vue.createApp({
     mitt.emitter.emit('parent', "AppVue RightPanel créée");
   },
     data() {
+      let store = useStore();
       return {
         // ici on ajoute les variables manipulables du graph
         showMenu1 : false,
@@ -22,44 +22,43 @@ export default Vue.createApp({
         // variable d'info sur machine
         nodedata : {},
         // variable d'info sur service
-        servicedata : {},
+        servicedata : store.servicedata,
+        store : store,
       }
     },
     methods: {
     // fonction de mise à jour des info de node/machine
     addOrUpdateMachine : function(machine) {
-      this.nodedata = machine;
+      this.store.nodedata = machine;
       this.showMenu1 = true;
       this.showMenu2 = false;
       this.showMenu3 = false;
     },
     // fonction de mise à jour des info de service
     addOrUpdateService : function(service) {
-      this.service.data = service;
+      this.store.servicedata = service;
       this.showMenu1 = false;
       this.showMenu2 = true;
       this.showMenu3 = false;
     },
     // fonctions de trigger d'un getHealth API 
     checkAPI : function() {
-      mitt.emitter.emit('check_health');
+      this.store.EchoSounderApp.getHealth();
     },
     addNote : function() {
       this.showDialogNote = !this.showDialogNote;
     },
     addNoteValidate : function() {
       console.log("emit add note request");
-      mitt.emitter.emit('request_scan', {"cible" : {}, 
-                                              "titre" : this.titreNote,
-                                              "texte" : this.texteNote, 
-                                              'callScan' : 'request_add_note'});
+      this.store.graphNetworkApp.addNote([], this.titreNote, this.texteNote);
       // on reset le dialog
       this.titreNote = "";
       this.texteNote = "";
 
     },
     exportGraph : function(typeexport) {
-      mitt.emitter.emit('request_export', typeexport);
+
+      this.store.graphNetworkApp.exportGraph(typeexport);
     },
     importJSON : function() {
       if(document.getElementById('echo_json_upload').files.length == 0) {
@@ -71,7 +70,7 @@ export default Vue.createApp({
         r.onloadend = function(e) {
           let data = e.target.result;
           // On envoie le fichier
-          mitt.emitter.emit('request_import_json', {'file' : data});
+          this.store.graphNetworkApp.importJson({'file' : data});
         }
 
         r.readAsBinaryString(f);
@@ -79,7 +78,7 @@ export default Vue.createApp({
       }
     },
     actionGraph : function(action) {
-      mitt.emitter.emit('request_action_graph', action);
+      this.store.graphNetworkApp.actionGraph(action);
     },
     // fonction de reset du panel : 
     resetPanel : function() {
