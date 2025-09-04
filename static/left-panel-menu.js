@@ -57,8 +57,8 @@ export default Vue.createApp({
     // fonction de scan machines
     clickScanMachine : function(typescan) {
       console.log("emit scan machine " + typescan);
-      if(this.nodesSelected.length > 1) {
-        this.store.graphNetworkApp.receiveEmitRequestMachineScan({type : typescan, cible : this.nodesSelected});
+      if(this.store.nodesSelected.length > 1) {
+        this.store.graphNetworkApp.receiveEmitRequestMachineScan({type : typescan, cible : this.store.nodesSelected});
       }else {
         this.store.graphNetworkApp.receiveEmitRequestMachineScan({type : typescan, cible : this.store.machineCible});
       }
@@ -68,8 +68,8 @@ export default Vue.createApp({
     clickScanServices : function() {
       if (this.portShow){
         console.log("emit services scan request");
-        if(this.nodesSelected.length > 1) {
-          this.store.graphNetworkApp.receiveEmitRequestMachinePortScan({type : 'request_services_scan', cible : this.nodesSelected, port_start : this.portStart, port_end : this.portEnd});
+        if(this.store.nodesSelected.length > 1) {
+          this.store.graphNetworkApp.receiveEmitRequestMachinePortScan({type : 'request_services_scan', cible : this.store.nodesSelected, port_start : this.portStart, port_end : this.portEnd});
         }else {
           this.store.graphNetworkApp.receiveEmitRequestMachinePortScan({type : 'request_services_scan', cible : this.store.machineCible, port_start : this.portStart, port_end : this.portEnd});
         }
@@ -80,8 +80,8 @@ export default Vue.createApp({
     // fonction de scan rapide de port
     clickScanFastServices : function() {
       console.log("emit services fast scan request");
-      if(this.nodesSelected.length > 1) {
-        this.store.graphNetworkApp.receiveEmitRequestMachinePortScan({type : 'request_services_fast_scan', cible : this.nodesSelected});
+      if(this.store.nodesSelected.length > 1) {
+        this.store.graphNetworkApp.receiveEmitRequestMachinePortScan({type : 'request_services_fast_scan', cible : this.store.nodesSelected});
       }else {
         this.store.graphNetworkApp.receiveEmitRequestMachinePortScan({type : 'request_services_fast_scan', cible : this.store.machineCible});
       }
@@ -93,16 +93,16 @@ export default Vue.createApp({
     },
     setIPListScan : function(list_ip) {
       console.log(list_ip);
-      this.nodesSelected = list_ip;
+      this.store.nodesSelected = list_ip;
     },
     deleteIPSelected : function(selectedIP) {
-      let index = this.nodesSelected.indexOf(selectedIP);
+      let index = this.store.nodesSelected.indexOf(selectedIP);
       if(index != -1) {
-        this.nodesSelected.splice(index, 1);
+        this.store.nodesSelected.splice(index, 1);
       }
     },
     deleteAllIPSelected : function() {
-      this.nodesSelected = [];
+      this.store.nodesSelected = [];
     },
     // fonctions de scan de placement étendue (global)
     clickTracerouteLocal : function() {

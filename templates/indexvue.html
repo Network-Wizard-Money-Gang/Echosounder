@@ -121,12 +121,12 @@
         <div class="d-flex flex-wrap echo_menu_left" v-if="showMenu2">
           <div class="container echo_menu_title">Scan machine</div>
           <!-- Ensemble des boutons de scan d'une machine spécifique -->
-          <div class="container echo_scan_cible" v-if="nodesSelected.length == 0">
+          <div class="container echo_scan_cible" v-if="store.nodesSelected.length == 0">
             <input class="echo_input_effect" type="text" name="cible_machine_cible" placeholder="ip" v-model="store.machineCible" required>
             <label for="name" class="echo_input_effect_label">IP CIBLE</label>
           </div>
           <div class="container echo_scan_panel" v-else>
-            <span v-for="i in nodesSelected" class="echo_ip_selected">{{"{{i}}"}} <i class="las la-window-close" @click="deleteIPSelected(i)"></i></span>
+            <span v-for="i in store.nodesSelected" class="echo_ip_selected">{{"{{i}}"}} <i class="las la-window-close" @click="deleteIPSelected(i)"></i></span>
             <div class="container button_ip_delete_all" @click="deleteAllIPSelected()"><i class="las la-trash-alt"></i> Effacer sélection</div>
             <div class="container echo_menu_subtitle"></div>
           </div>
@@ -218,6 +218,9 @@
       <!-- dialog note on graph -->
       <div class="flex flex-wrap echo_dialog_node" v-if="showDialogNote">
         <div class="container echo_menu_title">Ajout de commentaire</div>
+        <div class="container d-flex flex-wrap" v-if="store.nodesSelected.length > 0">
+          <span v-for="i in store.nodesSelected" class="echo_ip_selected">{{"{{i}}"}} <i class="las la-window-close" @click="deleteIPSelected(i)"></i></span>
+        </div>
         <!-- juste un bouton pour tout supprimer-->
         <div class="hvr-hollow echo_note_cross" @click="showDialogNote = false"><i class="las la-times"></i></div>
         <div class="container echo_menu_subtitle"></div>

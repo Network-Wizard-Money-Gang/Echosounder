@@ -43,9 +43,4 @@ export const useStore = defineStore('storeName', {
       graphNetworkApp : {},
     }
   },
-  getters: {
-    listInterfaceIPlength(state) {
-      return state.listInterfaceIP.length;
-    },
-  },
 });

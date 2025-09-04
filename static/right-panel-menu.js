@@ -50,11 +50,17 @@ export default Vue.createApp({
     },
     addNoteValidate : function() {
       console.log("emit add note request");
-      this.store.graphNetworkApp.addNote([], this.titreNote, this.texteNote);
+      this.store.graphNetworkApp.addNote(this.store.nodesSelected, this.titreNote, this.texteNote);
       // on reset le dialog
       this.titreNote = "";
       this.texteNote = "";
 
+    },
+    deleteIPSelected : function(ip) {
+      let index = this.store.nodesSelected.indexOf(ip);
+      if(index != -1) {
+        this.store.nodesSelected.splice(index, 1);
+      }
     },
     exportGraph : function(typeexport) {
 
