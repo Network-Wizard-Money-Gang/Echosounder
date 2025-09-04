@@ -66,6 +66,10 @@ def get_ip_cidr():
 def get_interfaces():
     return jsonify(echosounder.get_interfaces())
 
+@app.route('/json/interfaces/current')
+def get_current_interface():
+    return jsonify(echosounder.get_default_interface())
+
 @app.route('/json/interface/<interface>')
 def get_interface_info(interface):
     return jsonify(echosounder.get_interface_info(interface))

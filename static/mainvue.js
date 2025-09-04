@@ -40,6 +40,7 @@ const app = Vue.createApp({
         this.getHealthModules();
         this.getAddressFamily();
         this.getInterfaces();
+        this.getCurrentInterfaces();
         this.store.health.status = 'ok';
       })
       .catch(function (error) {
@@ -103,9 +104,7 @@ const app = Vue.createApp({
       .then((response) => {
         mitt.emitter.emit('notification_info', "récupération list interfaces");
         this.store.health.interfaces = 'true';
-        console.log(response.data);
         this.store.interfaces = response.data;
-        console.log(this.store);
       })
       .catch(function (error) {
         // handle error
@@ -114,6 +113,25 @@ const app = Vue.createApp({
         this.store.health.interfaces = 'false';
       });
     },
+    // fonction de récupération de l'interface liée à la route par défaut
+    getCurrentInterfaces() {
+      axios({
+        method: 'get',
+        url: '/json/interfaces/current',
+      })
+      .then((response) => {
+        mitt.emitter.emit('notification_info', "récupération interface default");
+        this.store.health.interface = response.data;
+        this.store.interface = response.data;
+        this.store.topPanelMenuApp.getInterfaceData();
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+        mitt.emitter.emit('notification_error', "API interface courante : " + error);
+      });
+    },
+
     // fonction d'envoie sur console de message
     print_event(texte) {
       console.log(texte);
@@ -129,6 +147,7 @@ Quasar.IconSet.set(Quasar.IconSet.lineAwesome);
 app.use(pinia);
 topPanelMenu.use(pinia);
 leftPanelMenu.use(pinia);
+rightPanelMenu.use(pinia);
 
 const EchoSounderApp = app.mount('#EchoSounderApp');
 

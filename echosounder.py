@@ -34,6 +34,12 @@ def get_address_family():
 def get_interfaces():
     return netifaces.interfaces()
 
+def get_default_interface():
+    if('default' in netifaces.gateways()):
+        return netifaces.gateways()['default'][netifaces.AF_INET][1]
+    else:
+        return "no default interface found"
+
 def get_interface_info(interface):
     return netifaces.ifaddresses(interface)
 
