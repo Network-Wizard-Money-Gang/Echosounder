@@ -40,14 +40,12 @@ const app = Vue.createApp({
         this.getHealthModules();
         this.getAddressFamily();
         this.getInterfaces();
-        //mitt.emitter.emit('toppanelmenu_health', ['status', 'ok']);
         this.store.health.status = 'ok';
       })
       .catch(function (error) {
         // handle error
         console.log(error);
         mitt.emitter.emit('notification_error', "API health : " + error);
-        //mitt.emitter.emit('toppanelmenu_health', ['status', 'error']);
         this.store.health.status = 'error';
       });
     },
@@ -58,13 +56,11 @@ const app = Vue.createApp({
         url: '/json/health/nmap',
       })
       .then((response) => {
-        //mitt.emitter.emit('toppanelmenu_health', ['nmap', response.data.nmap]);
         this.store.health.nmap = response.data.nmap;
       })
       .catch(function (error) {
         console.log(error);
         mitt.emitter.emit('notification_error', "API nmap : " + error);
-        //mitt.emitter.emit('toppanelmenu_health', ['nmap', 'false']);
         this.store.health.nmap = 'false';
       });
     },
@@ -75,13 +71,11 @@ const app = Vue.createApp({
         url: '/json/health/dependencies',
       })
       .then((response) => {
-        //mitt.emitter.emit('toppanelmenu_health', ['dependencies', response.data.dependencies]);
         this.store.health.dependencies = response.data.dependencies;
       })
       .catch(function (error) {
         // handle error
         mitt.emitter.emit('notification_error', "API dependencies : " + error);
-        //mitt.emitter.emit('toppanelmenu_health', ['dependencies', 'error']);
         this.store.health.dependencies = 'error';
       });
     },
@@ -92,7 +86,6 @@ const app = Vue.createApp({
         url: '/json/address_family',
       })
       .then((response) => {
-        //mitt.emitter.emit('toppanelmenu_addressfamily', response.data);
         this.store.address_family = response.data;
       })
       .catch(function (error) {
@@ -109,19 +102,15 @@ const app = Vue.createApp({
       })
       .then((response) => {
         mitt.emitter.emit('notification_info', "récupération list interfaces");
-        //mitt.emitter.emit('toppanelmenu_health', ['interfaces', 'true']);
         this.store.health.interfaces = 'true';
-        //mitt.emitter.emit('toppanelmenu_interfaces', response.data);
         console.log(response.data);
         this.store.interfaces = response.data;
-//        this.store.interfaces = response.data;
         console.log(this.store);
       })
       .catch(function (error) {
         // handle error
         console.log(error);
         mitt.emitter.emit('notification_error', "API interface : " + error);
-        //mitt.emitter.emit('toppanelmenu_health', ['interfaces', 'false']);
         this.store.health.interfaces = 'false';
       });
     },
