@@ -7,28 +7,28 @@ export default Vue.createApp({
     //lancement de la fonction de création du graph
     mitt.emitter.emit('parent', "AppVue LeftPanel créée");
   },
-    data() {
-      let store = useStore();
-      return {
-        // ici on ajoute les variables manipulables du graph
-        showMenu1 : false,
-        showMenu2 : false,
-        showMenu3 : false,
-        // IP/CIDR de VLAN de base
-        cible : store.cible,
-        // IP de machine cible
-        machineCible : store.machineCible,
-        // affichage de la range de port
-        portShow : false,
-        portStart : "0",
-        portEnd : "400",
-        // gestion des cibles
-        nodesSelected : [],
-        // accès interne à l'objet store contenant tout les contextes partagés
-        store : store,
-      }
-    },
-    methods: {
+  data() {
+    let store = useStore();
+    return {
+      // ici on ajoute les variables manipulables du graph
+      showMenu1 : false,
+      showMenu2 : false,
+      showMenu3 : false,
+      // IP/CIDR de VLAN de base
+      cible : store.cible,
+      // IP de machine cible
+      machineCible : store.machineCible,
+      // affichage de la range de port
+      portShow : false,
+      portStart : "0",
+      portEnd : "400",
+      // gestion des cibles
+      nodesSelected : [],
+      // accès interne à l'objet store contenant tout les contextes partagés
+      store : store,
+    }
+  },
+  methods: {
     // fonctions de mise à jour de VLAN cible
     addOrUpdateCible : function(cible) {
       this.store.cible = cible.id;
@@ -124,4 +124,5 @@ export default Vue.createApp({
       this.showMenu3 = false;
     }
   },
+
 })

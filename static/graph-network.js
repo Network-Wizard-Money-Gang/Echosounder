@@ -274,7 +274,7 @@ export default Vue.createApp({
           method : 'POST',
           url : '/json/dhcp_cidr_scan',
           headers: {'Content-Type': 'application/json'},
-          data : {'cible' : cible},
+          data : {'cible' : cible, 'interface' : this.store.interface},
         }).then((response) => {
           // si la requête passe :
           mitt.emitter.emit('echo_toast_scan', "réception d'un scan DHCP CIDR");

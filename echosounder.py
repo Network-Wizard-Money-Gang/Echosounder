@@ -455,11 +455,13 @@ def traceroute_scan(target='142.250.75.238') -> List[dict]:
                         break
     return list_return_ip
 
-def scan_dhcp_discover():
+def scan_dhcp_discover(target_cidr, interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     result = []
+    argument = " --script broadcast-dhcp-discover -e " + interface 
     try:
-        nm.scan(target_cidr, arguments=" --script broadcast-dhcp-discover")
+        nm.scan('', arguments=argument)
+        print(nm.get_nmap_last_output())
         for i in nm.all_hosts():
             if('addresses' in nm[i].keys()):
                 result.append(nm[i]['addresses'])
