@@ -108,6 +108,9 @@ export default Vue.createApp({
       // fonction de reset du panel : 
       resetPanel : function() {
         this.menuConf = false;
+        this.menuConfState = false; 
+        this.menuConfNetwork = false; 
+        this.menuConfTheme = false
       }
   },
 
