@@ -37,7 +37,13 @@ export default Vue.createApp({
       this.actionGraph("actualize");
     });
     this.loadStyle();
+
+    // handler event écoute de clavier
+    document.addEventListener("keyup", this.keyboardEventHandler);
     console.log(this);
+  },
+  beforeUnmount() {
+    document.removeEventListener("keyup", this.keyboardEventHandler);
   },
   data() {
     let store = useStore();
@@ -1189,5 +1195,11 @@ export default Vue.createApp({
           this.store.leftPanelMenuApp.setIPListScan(listip)
         }
       },
+      // fonction de gestion d'évènement clavier
+      keyboardEventHandler : function(key) {
+        if(key.keyCode === 46 | key.keyCode === 8) { // touche SUPPR/DEL 
+          this.cyto.elements('node:selected').remove(); 
+        }
+      }
   },
 });
