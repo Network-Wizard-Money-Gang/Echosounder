@@ -73,10 +73,10 @@ export default Vue.createApp({
           let f = document.getElementById('echo_json_upload').files[0],
               r = new FileReader();
 
-          r.onloadend = function(e) {
+          r.onloadend = (e) => {
             let data = e.target.result;
             // On envoie le fichier
-            this.store.graphNetworkApp.importJson({'file' : data});
+            this.store.graphNetworkApp.setCytoJSON(JSON.parse(data));
           }
 
           r.readAsBinaryString(f);
