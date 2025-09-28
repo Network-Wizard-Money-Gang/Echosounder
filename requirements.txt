@@ -6,3 +6,4 @@ scapy
 python-nmap
 impacket
 pyopenssl
+xmltodict

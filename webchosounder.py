@@ -118,8 +118,9 @@ def scan_dhcp_cidr():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        dhcp_ip: List[List[dict]] = echosounder.scan_dhcp_discover(request.json['cible'], request.json['interface'])
-        return jsonify(scan=dhcp_ip)
+        local_ip_mac_and_gateway: dict = echosounder.get_host_and_gateway()
+        dhcp_ips: List[dict] = echosounder.scan_dhcp_discover(request.json['cible'], request.json['interface'])
+        return jsonify(local_data=local_ip_mac_and_gateway, scan=dhcp_ips, vlan=request.json['cible'])
 
 @app.route('/json/profiling_scan', methods=['POST'])
 def scan_profiling():

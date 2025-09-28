@@ -5,6 +5,7 @@ from typing import Optional, List, Tuple
 import json
 import ipaddress
 import platform
+import xmltodict
 
 import netifaces
 import dns.resolver, dns.reversename
@@ -458,18 +459,27 @@ def traceroute_scan(target='142.250.75.238') -> List[dict]:
 def scan_dhcp_discover(target_cidr, interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     result = []
+    pre_script = {}
+    ip_dhcp = ""
     argument = " --script broadcast-dhcp-discover -e " + interface 
     try:
         nm.scan('', arguments=argument)
+        all_data_text = nm.get_nmap_last_output().decode('utf8')
+        all_data_parsed = xmltodict.parse(all_data_text)
         print(nm.get_nmap_last_output())
         for i in nm.all_hosts():
             if('addresses' in nm[i].keys()):
                 result.append(nm[i]['addresses'])
-
+        for i in all_data_parsed['nmaprun']['prescript']['script']['table']['elem']:
+            if(i['@key'] in ('Server Identifier', 'Hostname', 'Domain Name', 'Router', 'Subnet Mask')):
+                pre_script[i['@key']] = i['#text']
+            if(i['@key'] == 'Router'):
+                ip_dhcp = i['#text']
+                result.append(i['#text'])
     except Exception as e:
-        print(e)
-        return []
-    return result
+        return {'IPs' : result}
+    
+    return {'IPs' : result, 'DHCP_server' : {'ip' : ip_dhcp, 'data' : pre_script}}
 
 if __name__ == "__main__":
     print("TEST")
