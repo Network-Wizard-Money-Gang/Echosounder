@@ -11,7 +11,6 @@ export default Vue.createApp({
     });
     // création des évènements du graph
     this.cyto.on('tap', 'node', (evt) => {
-      console.log(evt);
       // on envoie aux apps vue le noeud à afficher :
       if(evt.target.data('type') == 'VLAN') {
         this.store.leftPanelMenuApp.addOrUpdateCible(evt.target.data());
@@ -34,6 +33,7 @@ export default Vue.createApp({
       this.store.topPanelMenuApp.resetPanel();
       this.store.leftPanelMenuApp.resetPanel();
       this.store.rightPanelMenuApp.resetPanel();
+      this.store.nodesSelected = [];
       this.actionGraph("actualize");
     });
     this.loadStyle();
