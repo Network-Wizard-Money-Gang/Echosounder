@@ -79,14 +79,14 @@ def reverse_ptr_local_scan(target_ip) -> list:
         list_ptr.append('no ptr')
     return list_ptr
 
-def arp_local_scan(target_ip) -> Tuple[List[str], List[str]]:
+def arp_local_scan(target_ip, interface) -> Tuple[List[str], List[str]]:
     """
     ARP SCAN for local machines
     """
     router_hop_1: Optional[str] = conf.route.route("0.0.0.0")[2]
     # retrieve local IP address
     # 172.20.10.4/28 -- 192.168.1.0/24
-    arp = scapy.layers.l2.ARP(pdst=target_ip)
+    arp = scapy.layers.l2.ARP(pdst=(target_ip+'%'+interface))
 
     # ff:ff:ff:ff:ff:ff broadcast mac address
     ether = scapy.layers.l2.Ether(dst="ff:ff:ff:ff:ff:ff")
@@ -109,17 +109,17 @@ def arp_local_scan(target_ip) -> Tuple[List[str], List[str]]:
         mac_list.append((client['mac']))
     return (ip_list, mac_list)
 
-def recon_fast_ping(target_ip) -> tuple:
+def recon_fast_ping(target_ip, interface) -> tuple:
     os_ttl_list: List[str] = [platform.system()]
     local_ip: str = scapy.arch.get_if_addr(conf.iface)
     ttl_list: list = []
-    ip_list, mac = arp_local_scan(target_ip)
+    ip_list, mac = arp_local_scan(target_ip, interface)
 
     for ip in ip_list:
         if ip == local_ip:
             ttl_list.append('0')
         else:
-            packet: Optional[Packet] = scapy.sendrecv.sr1(IP(dst=ip) / ICMP(), timeout=15)
+            packet: Optional[Packet] = scapy.sendrecv.sr1(IP(dst=(ip+'%'+interface)) / ICMP(), timeout=15)
             if packet is None:
                 ttl_list.append('0')
             else:
@@ -128,8 +128,8 @@ def recon_fast_ping(target_ip) -> tuple:
     append_os_ttl(os_ttl_list, ttl_list)
     return ip_list, mac, os_ttl_list
 
-def data_creation_arp_scan(target_ip) -> List[dict]:
-    return_scan = list(arp_local_scan(target_ip))
+def data_creation_arp_scan(target_ip, interface) -> List[dict]:
+    return_scan = list(arp_local_scan(target_ip, interface))
     ip_list, mac_list = return_scan[0], return_scan[1]
     os_list = None
     global_list = []
@@ -154,8 +154,8 @@ def data_creation_arp_scan(target_ip) -> List[dict]:
             global_list.append(ip_and_mac_to_dict)
     return global_list
 
-def data_creation_fast_ping(target_ip) -> List[dict]:
-    return_scan = list(recon_fast_ping(target_ip))
+def data_creation_fast_ping(target_ip, interface) -> List[dict]:
+    return_scan = list(recon_fast_ping(target_ip, interface))
     ip_list, mac_list, os_list = return_scan[0], return_scan[1], return_scan[2]
     global_list = []
 
@@ -418,7 +418,7 @@ def data_creation_services_discovery(target_ip, port_start: int = 0, port_end: i
     """
     return retrieve_services_from_scan(target_ip, port_start=port_start, port_end=port_end)
 
-def traceroute_cidr_scan(targetcidr) -> List[List[dict]]:
+def traceroute_cidr_scan(targetcidr, interface='eth0') -> List[List[dict]]:
     targethosts = ipaddress.IPv4Network(targetcidr)
     result = []
     slicer = targethosts.num_addresses // 4 # 4 sert de "pas" pour ne prendre que 5 IP au maximum
@@ -426,13 +426,13 @@ def traceroute_cidr_scan(targetcidr) -> List[List[dict]]:
         slicer = 1
     for i in itertools.islice(targethosts, 0, None, slicer): # parcours la range 5 fois via le slicer
         print(i)
-        result.append(traceroute_scan(str(i)))
+        result.append(traceroute_scan(str(i), interface))
     return result
 
-def traceroute_scan(target='142.250.75.238') -> List[dict]:
+def traceroute_scan(target='142.250.75.238', interface='eth0') -> List[dict]:
     as_retrieved = None
     list_return_ip = []
-    p, r = traceroute(target)
+    p, r = traceroute(target, iface=interface)
     if(target in p.get_trace().keys()):
         p = p.get_trace()[target]
         with open('asinfo/routeviews-prefix2as-latest.json', 'r') as listcidr:

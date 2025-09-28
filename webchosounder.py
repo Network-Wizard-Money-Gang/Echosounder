@@ -80,7 +80,7 @@ def scan_arp():
         return {'error': "malformed request"}
     else:
         local_ip_mac_and_gateway: dict = echosounder.get_host_and_gateway()
-        local_ip_mac: List[dict] = echosounder.data_creation_arp_scan(request.json['cible'])
+        local_ip_mac: List[dict] = echosounder.data_creation_arp_scan(request.json['cible'], request.json['interface'])
         return jsonify(local_data=local_ip_mac_and_gateway, scan=local_ip_mac, vlan=request.json['cible'])
 
 @app.route('/json/fast_scan', methods=['POST'])
@@ -89,7 +89,7 @@ def scan_rapide():
         return {'error': "malformed request"}
     else:
         local_ip_mac_and_gateway: dict = echosounder.get_host_and_gateway()
-        ip_mac_os: List[dict] = echosounder.data_creation_fast_ping(request.json['cible'])
+        ip_mac_os: List[dict] = echosounder.data_creation_fast_ping(request.json['cible'], request.json['interface'])
         return jsonify(local_data=local_ip_mac_and_gateway, scan=ip_mac_os, vlan=request.json['cible'])
 
 @app.route('/json/trace_scan', methods=['GET'])
@@ -102,7 +102,7 @@ def scan_trace():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        trace: List[dict] = echosounder.traceroute_scan(request.json['cible'])
+        trace: List[dict] = echosounder.traceroute_scan(request.json['cible'], request.json['interface'])
         return jsonify(scan=trace)
 
 @app.route('/json/trace_cidr_scan', methods=['POST'])
@@ -110,7 +110,7 @@ def scan_trace_cidr():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        trace: List[List[dict]] = echosounder.traceroute_cidr_scan(request.json['cible'])
+        trace: List[List[dict]] = echosounder.traceroute_cidr_scan(request.json['cible'], request.json['interface'])
         return jsonify(scan=trace)
 
 @app.route('/json/dhcp_cidr_scan', methods=['POST'])

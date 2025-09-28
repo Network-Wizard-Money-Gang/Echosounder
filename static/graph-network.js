@@ -241,7 +241,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/arp_scan',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible},
+        data : {'cible' : cible, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :
         mitt.emitter.emit('echo_toast_scan', "réception d'un scan ARP");
@@ -260,7 +260,7 @@ export default Vue.createApp({
           method : 'POST',
           url : '/json/fast_scan',
           headers: {'Content-Type': 'application/json'},
-          data : {'cible' : cible},
+          data : {'cible' : cible, 'interface' : this.store.interface},
         }).then((response) => {
           // si la requête passe :
           mitt.emitter.emit('echo_toast_scan', "réception d'un scan FastPing");
@@ -299,7 +299,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/trace_cidr_scan',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible},
+        data : {'cible' : cible, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :
         mitt.emitter.emit('echo_toast_scan', "réception d'un scan Traceroute CIDR");
