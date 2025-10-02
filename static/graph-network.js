@@ -320,7 +320,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/profiling_scan',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible},
+        data : {'cible' : cible, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :          
         mitt.emitter.emit('echo_toast_scan', "Réception scan profiling");
@@ -339,7 +339,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/reverse_ptr_scan',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible},
+        data : {'cible' : cible, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :
         mitt.emitter.emit('echo_toast_scan', "Réception scan PTR");
@@ -358,7 +358,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/fingerpting_ssh_scan',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible},
+        data : {'cible' : cible, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :
         mitt.emitter.emit('echo_toast_scan', "Réception scan fingerprint SSH");
@@ -379,7 +379,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/scan_info_smb',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible},
+        data : {'cible' : cible, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :          
         mitt.emitter.emit('echo_toast_scan', "Réception scan SMB");
@@ -398,7 +398,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/scan_snmp_info',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible},
+        data : {'cible' : cible, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :
         mitt.emitter.emit('echo_toast_scan', "Réception scan SNMP");
@@ -417,7 +417,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/scan_snmp_netstat',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible},
+        data : {'cible' : cible, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :          
         mitt.emitter.emit('echo_toast_scan', "Réception scan SNMP netstat");
@@ -436,7 +436,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/scan_snmp_processes',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible},
+        data : {'cible' : cible, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :      
         mitt.emitter.emit('echo_toast_scan', "Lancement scan SNMP process");
@@ -455,7 +455,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/scan_ntp',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible},
+        data : {'cible' : cible, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :          
         mitt.emitter.emit('echo_toast_scan', "Réception scan NTP");
@@ -493,7 +493,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/trace_scan',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible},
+        data : {'cible' : cible, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :          
         mitt.emitter.emit('echo_toast_scan', "Réception scan trace");
@@ -512,7 +512,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/services_scan',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible, 'port_start' : pstart, 'port_end' : pend},
+        data : {'cible' : cible, 'port_start' : pstart, 'port_end' : pend, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :          
         mitt.emitter.emit('echo_toast_scan', "Réception scan Services custom");
@@ -572,7 +572,7 @@ export default Vue.createApp({
             method : 'POST',
             url : '/json/trace_cidr_scan',
             headers: {'Content-Type': 'application/json'},
-            data : {'cible' : cidr},
+            data : {'cible' : cidr, 'interface' : this.store.interface},
           }).then((response) => {
             // si la requête passe :              
             mitt.emitter.emit('echo_toast_scan', "réception d'un scan Traceroute Local");
@@ -612,7 +612,7 @@ export default Vue.createApp({
             method : 'POST',
             url : '/json/trace_scan',
             headers: {'Content-Type': 'application/json'},
-            data : {'cible' : cible},
+            data : {'cible' : cible, 'interface' : this.store.interface},
           }).then((response) => {
             // si la requête passe :              
             mitt.emitter.emit('echo_toast_scan', "réception d'un scan Traceroute CIDR");

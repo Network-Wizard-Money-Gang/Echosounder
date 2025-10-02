@@ -79,7 +79,7 @@ def scan_arp():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        local_ip_mac_and_gateway: dict = echosounder.get_host_and_gateway()
+        local_ip_mac_and_gateway: dict = echosounder.get_host_and_gateway(request.json['interface'])
         local_ip_mac: List[dict] = echosounder.data_creation_arp_scan(request.json['cible'], request.json['interface'])
         return jsonify(local_data=local_ip_mac_and_gateway, scan=local_ip_mac, vlan=request.json['cible'])
 
@@ -88,7 +88,7 @@ def scan_rapide():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        local_ip_mac_and_gateway: dict = echosounder.get_host_and_gateway()
+        local_ip_mac_and_gateway: dict = echosounder.get_host_and_gateway(request.json['interface'])
         ip_mac_os: List[dict] = echosounder.data_creation_fast_ping(request.json['cible'], request.json['interface'])
         return jsonify(local_data=local_ip_mac_and_gateway, scan=ip_mac_os, vlan=request.json['cible'])
 

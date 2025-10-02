@@ -39,7 +39,10 @@ def get_default_interface():
     if('default' in netifaces.gateways()):
         return netifaces.gateways()['default'][netifaces.AF_INET][1]
     else:
-        return "no default interface found"
+        return "lo" # faute de mieux...
+
+#on utilise ici l'interface par défaut comme variable globale pour l'initialisation des interfaces
+default_interface = get_default_interface()
 
 def get_interface_info(interface):
     return netifaces.ifaddresses(interface)
@@ -47,17 +50,23 @@ def get_interface_info(interface):
 def from_ipnetmask_get_ipcidr(ipnetmask):
     return str(ipaddress.ip_network(ipnetmask, strict=False))
 
-def get_host_and_gateway() -> dict:
+def get_host_and_gateway(interface=default_interface) -> dict:
     """
     grab the
         - IP and mac of local machine
         - gateway IP
     """
-    local_ip: str = get_if_addr(conf.iface)
-    local_mac: str = get_if_hwaddr(conf.iface)
+    local_ip: str = get_if_addr(interface)
+    local_mac: str = get_if_hwaddr(interface)
 
-    router_hop_1: Optional[str] = conf.route.route("0.0.0.0")[2]
-    router_hop_1_mac: Optional[str] = getmacbyip(router_hop_1)
+    router_hop_1 = None
+    router_hop_1_mac = None
+    for i in conf.ifaces:
+        if(i == interface):
+            router_hop_1 = conf.ifaces[i].ip
+            router_hop_1_mac = conf.ifaces[i].mac
+    #router_hop_1: Optional[str] = conf.route.route("0.0.0.0")[2]
+    #router_hop_1_mac: Optional[str] = getmacbyip(router_hop_1)
     gateway_vendor = None
     with open("ouiinfo/oui.json") as ouijson:
         OUIJson = json.loads(ouijson.read())
@@ -68,7 +77,7 @@ def get_host_and_gateway() -> dict:
                 gateway_vendor = i[1]
     return {"local_ip": local_ip, "local_mac": local_mac, "gateway_ip": router_hop_1, "gateway_mac": router_hop_1_mac, "gateway_vendor" : gateway_vendor}
 
-def reverse_ptr_local_scan(target_ip) -> list:
+def reverse_ptr_local_scan(target_ip, interface=default_interface) -> list:
     list_ptr = []
     try:
         no = dns.reversename.from_address(target_ip)
@@ -79,7 +88,7 @@ def reverse_ptr_local_scan(target_ip) -> list:
         list_ptr.append('no ptr')
     return list_ptr
 
-def arp_local_scan(target_ip, interface) -> Tuple[List[str], List[str]]:
+def arp_local_scan(target_ip, interface=default_interface) -> Tuple[List[str], List[str]]:
     """
     ARP SCAN for local machines
     """
@@ -99,8 +108,8 @@ def arp_local_scan(target_ip, interface) -> Tuple[List[str], List[str]]:
     clients: List[dict] = []
     ip_list: List[str] = []
     mac_list: List[str] = []
-    ip_list.append(scapy.arch.get_if_addr(conf.iface))
-    mac_list.append(scapy.arch.get_if_hwaddr(conf.iface))
+    ip_list.append(scapy.arch.get_if_addr(interface))
+    mac_list.append(scapy.arch.get_if_hwaddr(interface))
 
     for sent, received in result:  # all the responses are implemented in "clients"
         clients.append({'ip': received.psrc, 'mac': received.hwsrc})
@@ -109,7 +118,7 @@ def arp_local_scan(target_ip, interface) -> Tuple[List[str], List[str]]:
         mac_list.append((client['mac']))
     return (ip_list, mac_list)
 
-def recon_fast_ping(target_ip, interface) -> tuple:
+def recon_fast_ping(target_ip, interface=default_interface) -> tuple:
     os_ttl_list: List[str] = [platform.system()]
     local_ip: str = scapy.arch.get_if_addr(conf.iface)
     ttl_list: list = []
@@ -128,7 +137,7 @@ def recon_fast_ping(target_ip, interface) -> tuple:
     append_os_ttl(os_ttl_list, ttl_list)
     return ip_list, mac, os_ttl_list
 
-def data_creation_arp_scan(target_ip, interface) -> List[dict]:
+def data_creation_arp_scan(target_ip, interface=default_interface) -> List[dict]:
     return_scan = list(arp_local_scan(target_ip, interface))
     ip_list, mac_list = return_scan[0], return_scan[1]
     os_list = None
@@ -154,7 +163,7 @@ def data_creation_arp_scan(target_ip, interface) -> List[dict]:
             global_list.append(ip_and_mac_to_dict)
     return global_list
 
-def data_creation_fast_ping(target_ip, interface) -> List[dict]:
+def data_creation_fast_ping(target_ip, interface=default_interface) -> List[dict]:
     return_scan = list(recon_fast_ping(target_ip, interface))
     ip_list, mac_list, os_list = return_scan[0], return_scan[1], return_scan[2]
     global_list = []
@@ -190,7 +199,7 @@ def append_os_ttl(os_ttl_list, ttl_list) -> None:
         else:
             os_ttl_list.append("Unknown")
 
-def creation_data_nmap(ip_address) -> dict:
+def creation_data_nmap(ip_address, interface=default_interface) -> dict:
     nm: nmap.PortScanner = nmap.PortScanner()
     nmap_scan_result: dict = nm.scan(hosts=ip_address, arguments='-O')
     scan_res_to_str: str = json.dumps(nmap_scan_result)
@@ -217,7 +226,7 @@ def creation_data_nmap(ip_address) -> dict:
         "accuracy": accuracy,
     }
 
-def null_session_smb_enumeration(target_ip):
+def null_session_smb_enumeration(target_ip, interface=default_interface):
     """ 
     Using srsvc to list some juicy information, this can use blank credentials as well as "Guest" and "" as user and password
     """
@@ -268,13 +277,13 @@ def null_session_smb_enumeration(target_ip):
 
     return smb_info
 
-def retrieve_services_from_scan(target_ip, port_start: int, port_end: int) -> List[dict]:
+def retrieve_services_from_scan(target_ip, port_start: int, port_end: int, interface=default_interface) -> List[dict]:
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
 
     global_list: List[dict] = retrieve_services([target_ip], nm, port_start=port_start, port_end=port_end)
     return global_list
 
-def retrieve_services(ip_list: List[str], nm: nmap.PortScanner, port_start: int, port_end: int) -> List[dict]:
+def retrieve_services(ip_list: List[str], nm: nmap.PortScanner, port_start: int, port_end: int, interface=default_interface) -> List[dict]:
     """
     Extract the service data after performing an nmap scan
     """
@@ -296,7 +305,7 @@ def retrieve_services(ip_list: List[str], nm: nmap.PortScanner, port_start: int,
         global_list.append({})
     return global_list
 
-def retrieve_top_services(target_ip):
+def retrieve_top_services(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
     global_list: List[dict] = []
@@ -316,7 +325,7 @@ def retrieve_top_services(target_ip):
         global_list.append({})
     return global_list
 
-def fingerprint_ssh(target_ip):
+def fingerprint_ssh(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
     nmap_scan_result = nm.scan(target_ip, arguments="-p 22 --script ssh-hostkey --script-args ssh_hostkey=full")
@@ -332,7 +341,7 @@ def fingerprint_ssh(target_ip):
                 })
     return global_list
 
-def scan_snmp_info(target_ip):
+def scan_snmp_info(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
     nmap_scan_result = nm.scan(target_ip, arguments="-sU -p 161 --script snmp-info")
@@ -348,7 +357,7 @@ def scan_snmp_info(target_ip):
                 })
     return global_list
 
-def scan_snmp_netstat(target_ip):
+def scan_snmp_netstat(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
     nmap_scan_result = nm.scan(target_ip, arguments="-sU -p 161 --script snmp-netstat")
@@ -364,7 +373,7 @@ def scan_snmp_netstat(target_ip):
                 })
     return global_list
 
-def scan_snmp_processes(target_ip):
+def scan_snmp_processes(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
     nmap_scan_result = nm.scan(target_ip, arguments="-sU -p 161 --script snmp-processes")
@@ -380,7 +389,7 @@ def scan_snmp_processes(target_ip):
                 })
     return global_list
 
-def scan_ntp_info(target_ip):
+def scan_ntp_info(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
     nmap_scan_result = nm.scan(target_ip, arguments="-sU -p 123 --script ntp-info")
@@ -396,7 +405,7 @@ def scan_ntp_info(target_ip):
                 })
     return global_list
 
-def scan_rdp_info(target_ip):
+def scan_rdp_info(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
     nmap_scan_result = nm.scan(target_ip, arguments="-p 3389 --script rdp-ntlm-info")
@@ -412,13 +421,13 @@ def scan_rdp_info(target_ip):
                 })
     return global_list
 
-def data_creation_services_discovery(target_ip, port_start: int = 0, port_end: int = 400) -> List[dict]:
+def data_creation_services_discovery(target_ip, port_start: int = 0, port_end: int = 400, interface=default_interface) -> List[dict]:
     """
     Service discovery using nmap
     """
     return retrieve_services_from_scan(target_ip, port_start=port_start, port_end=port_end)
 
-def traceroute_cidr_scan(targetcidr, interface='eth0') -> List[List[dict]]:
+def traceroute_cidr_scan(targetcidr, interface=default_interface) -> List[List[dict]]:
     targethosts = ipaddress.IPv4Network(targetcidr)
     result = []
     slicer = targethosts.num_addresses // 4 # 4 sert de "pas" pour ne prendre que 5 IP au maximum
@@ -429,7 +438,7 @@ def traceroute_cidr_scan(targetcidr, interface='eth0') -> List[List[dict]]:
         result.append(traceroute_scan(str(i), interface))
     return result
 
-def traceroute_scan(target='142.250.75.238', interface='eth0') -> List[dict]:
+def traceroute_scan(target='142.250.75.238', interface=default_interface) -> List[dict]:
     as_retrieved = None
     list_return_ip = []
     p, r = traceroute(target, iface=interface)
@@ -456,7 +465,7 @@ def traceroute_scan(target='142.250.75.238', interface='eth0') -> List[dict]:
                         break
     return list_return_ip
 
-def scan_dhcp_discover(target_cidr, interface):
+def scan_dhcp_discover(target_cidr, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     result = []
     pre_script = {}
