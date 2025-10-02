@@ -670,11 +670,12 @@ export default Vue.createApp({
         }
       );
 
-      // ajout du routeur gateway
+      // on traite le cas où on a pleins de gateway "0.0.0.0" foireuses pour l'ajout du routeur gateway
       let typeipgateway = scan_data.local_data.gateway_ip;
       if(typeipgateway.includes('_')) {
         typeipgateway = typeipgateway.split('_')[0];
       }
+      // ajout du routeur gateway
       nodes.push(
         {
           group:'nodes',
