@@ -66,6 +66,7 @@ def get_host_and_gateway(interface=default_interface) -> dict:
             router_hop_1 = i[2]
             if(router_hop_1 != "0.0.0.0"):
                 router_hop_1_mac = getmacbyip(i[2])
+                break
             else:
                 router_hop_1 =  router_hop_1 + "_" + interface
     #router_hop_1: Optional[str] = conf.route.route("0.0.0.0")[2]
@@ -123,7 +124,7 @@ def arp_local_scan(target_ip, interface=default_interface) -> Tuple[List[str], L
 
 def recon_fast_ping(target_ip, interface=default_interface) -> tuple:
     os_ttl_list: List[str] = [platform.system()]
-    local_ip: str = scapy.arch.get_if_addr(conf.iface)
+    local_ip: str = scapy.arch.get_if_addr(interface)
     ttl_list: list = []
     ip_list, mac = arp_local_scan(target_ip, interface)
 
@@ -204,7 +205,8 @@ def append_os_ttl(os_ttl_list, ttl_list) -> None:
 
 def creation_data_nmap(ip_address, interface=default_interface) -> dict:
     nm: nmap.PortScanner = nmap.PortScanner()
-    nmap_scan_result: dict = nm.scan(hosts=ip_address, arguments='-O')
+    arguments = '-O -e ' + interface
+    nmap_scan_result: dict = nm.scan(hosts=ip_address, arguments=arguments)
     scan_res_to_str: str = json.dumps(nmap_scan_result)
     scan_res_to_dict = json.loads(scan_res_to_str)
 
@@ -283,7 +285,7 @@ def null_session_smb_enumeration(target_ip, interface=default_interface):
 def retrieve_services_from_scan(target_ip, port_start: int, port_end: int, interface=default_interface) -> List[dict]:
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
 
-    global_list: List[dict] = retrieve_services([target_ip], nm, port_start=port_start, port_end=port_end)
+    global_list: List[dict] = retrieve_services([target_ip], nm, port_start=port_start, port_end=port_end, interface=interface)
     return global_list
 
 def retrieve_services(ip_list: List[str], nm: nmap.PortScanner, port_start: int, port_end: int, interface=default_interface) -> List[dict]:
@@ -291,9 +293,10 @@ def retrieve_services(ip_list: List[str], nm: nmap.PortScanner, port_start: int,
     Extract the service data after performing an nmap scan
     """
     global_list: List[dict] = []
+    arguments = "-sV -e " + interface
     try:
         for i in range(len(ip_list)):
-            nmap_scan_result: dict = nm.scan(ip_list[i], str(port_start) + '-' + str(port_end), arguments="-sV")
+            nmap_scan_result: dict = nm.scan(ip_list[i], str(port_start) + '-' + str(port_end), arguments=arguments)
             for i in nm.all_hosts():
                 for protocol in nm[i].all_protocols():
                     for kport, content in nm[i][protocol].items():
@@ -312,8 +315,9 @@ def retrieve_top_services(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
     global_list: List[dict] = []
+    arguments = "-F -e " + interface
     try:
-        nmap_scan_result = nm.scan(target_ip, arguments="-F")
+        nmap_scan_result = nm.scan(target_ip, arguments=arguments)
         for i in nm.all_hosts():
             for protocol in nm[i].all_protocols():
                 for kport, content in nm[i][protocol].items():
@@ -331,7 +335,9 @@ def retrieve_top_services(target_ip, interface=default_interface):
 def fingerprint_ssh(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
-    nmap_scan_result = nm.scan(target_ip, arguments="-p 22 --script ssh-hostkey --script-args ssh_hostkey=full")
+    arguments = "-p 22 --script ssh-hostkey --script-args ssh_hostkey=full -e " + interface
+    nmap_scan_result = nm.scan(target_ip, arguments=arguments)
+    print(nmap_scan_result)
     global_list: List[dict] = []
     for i in nm.all_hosts():
         for protocol in nm[i].all_protocols():
@@ -347,6 +353,7 @@ def fingerprint_ssh(target_ip, interface=default_interface):
 def scan_snmp_info(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
+    arguments = "-sU -p 161 --script snmp-info -e " + interface
     nmap_scan_result = nm.scan(target_ip, arguments="-sU -p 161 --script snmp-info")
     global_list: List[dict] = []
     for i in nm.all_hosts():
@@ -363,7 +370,8 @@ def scan_snmp_info(target_ip, interface=default_interface):
 def scan_snmp_netstat(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
-    nmap_scan_result = nm.scan(target_ip, arguments="-sU -p 161 --script snmp-netstat")
+    arguments = "-sU -p 161 --script snmp-netstat -e " + interface
+    nmap_scan_result = nm.scan(target_ip, arguments=arguments)
     global_list: List[dict] = []
     for i in nm.all_hosts():
         for protocol in nm[i].all_protocols():
@@ -379,6 +387,7 @@ def scan_snmp_netstat(target_ip, interface=default_interface):
 def scan_snmp_processes(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
+    arguments = 
     nmap_scan_result = nm.scan(target_ip, arguments="-sU -p 161 --script snmp-processes")
     global_list: List[dict] = []
     for i in nm.all_hosts():

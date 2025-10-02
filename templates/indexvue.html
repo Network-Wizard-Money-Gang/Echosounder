@@ -90,7 +90,7 @@
       <Transition name="slide-left">
         <div class="d-flex flex-wrap echo_menu_left" v-if="showMenu1">
           <!-- titre -->
-          <div class="container echo_menu_title">Scan réseau local</div>
+          <div class="container echo_menu_title">Scan réseau local - from iface {{"{{store.interface}}"}}</div>
           <!-- scan sans cible (level 2) -->
           <div class="container echo_scan_panel">
             <div class="echo_button_scan hvr-hollow" @click="clickScanARP()">Scan ARP</div>
@@ -119,7 +119,7 @@
       </div>
       <Transition name="slide-left">
         <div class="d-flex flex-wrap echo_menu_left" v-if="showMenu2">
-          <div class="container echo_menu_title">Scan machine</div>
+          <div class="container echo_menu_title">Scan machine - from iface {{"{{store.interface}}"}}</div>
           <!-- Ensemble des boutons de scan d'une machine spécifique -->
           <div class="container echo_scan_cible" v-if="store.nodesSelected.length == 0">
             <input class="echo_input_effect" type="text" name="cible_machine_cible" placeholder="ip" v-model="store.machineCible" required>
