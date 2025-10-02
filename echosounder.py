@@ -61,20 +61,24 @@ def get_host_and_gateway(interface=default_interface) -> dict:
 
     router_hop_1 = None
     router_hop_1_mac = None
-    for i in conf.ifaces:
-        if(i == interface):
-            router_hop_1 = conf.ifaces[i].ip
-            router_hop_1_mac = conf.ifaces[i].mac
+    for i in conf.route.routes:
+        if(i[3] == interface):
+            router_hop_1 = i[2]
+            if(router_hop_1 != "0.0.0.0"):
+                router_hop_1_mac = getmacbyip(i[2])
+            else:
+                router_hop_1 =  router_hop_1 + "_" + interface
     #router_hop_1: Optional[str] = conf.route.route("0.0.0.0")[2]
     #router_hop_1_mac: Optional[str] = getmacbyip(router_hop_1)
     gateway_vendor = None
-    with open("ouiinfo/oui.json") as ouijson:
-        OUIJson = json.loads(ouijson.read())
-        ouijson.close()
-        routermacoui = router_hop_1_mac[0:8].replace(':', '').upper()
-        for i in OUIJson:
-            if(routermacoui == i[0]):
-                gateway_vendor = i[1]
+    if(router_hop_1_mac != None):
+        with open("ouiinfo/oui.json") as ouijson:
+            OUIJson = json.loads(ouijson.read())
+            ouijson.close()
+            routermacoui = router_hop_1_mac[0:8].replace(':', '').upper()
+            for i in OUIJson:
+                if(routermacoui == i[0]):
+                    gateway_vendor = i[1]
     return {"local_ip": local_ip, "local_mac": local_mac, "gateway_ip": router_hop_1, "gateway_mac": router_hop_1_mac, "gateway_vendor" : gateway_vendor}
 
 def reverse_ptr_local_scan(target_ip, interface=default_interface) -> list:

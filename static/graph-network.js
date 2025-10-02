@@ -671,6 +671,10 @@ export default Vue.createApp({
       );
 
       // ajout du routeur gateway
+      let typeipgateway = scan_data.local_data.gateway_ip;
+      if(typeipgateway.includes('_')) {
+        typeipgateway = typeipgateway.split('_')[0];
+      }
       nodes.push(
         {
           group:'nodes',
@@ -678,7 +682,7 @@ export default Vue.createApp({
             id : scan_data.local_data.gateway_ip,
             label : ("gateway " + scan_data.local_data.gateway_ip + "\n" + scan_data.local_data.gateway_mac),
             type : 'IP',
-            typeip: ipaddr.parse(scan_data.local_data.gateway_ip).range(),
+            typeip: ipaddr.parse(typeipgateway).range(),
             data : scan_data.local_data,
             data_ip : scan_data.local_data.gateway_ip,
             parent : scan_data.vlan,
