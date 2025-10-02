@@ -92,7 +92,6 @@ def arp_local_scan(target_ip, interface=default_interface) -> Tuple[List[str], L
     """
     ARP SCAN for local machines
     """
-    router_hop_1: Optional[str] = conf.route.route("0.0.0.0")[2]
     # retrieve local IP address
     # 172.20.10.4/28 -- 192.168.1.0/24
     arp = scapy.layers.l2.ARP(pdst=(target_ip+'%'+interface))
