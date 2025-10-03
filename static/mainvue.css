@@ -15,6 +15,8 @@
   --widget-strong-contour1 : #5c202a; /* var(--widget-strong-contour1) */
   --widget-strong-contour2 : #723243; /* var(--widget-strong-contour2) */
   --widget-strong-contour3: #63bac2; /* var(--widget-strong-contour3) */
+  --button-gradiance-left : #242424;  /* var(--button-gradiance-left) */
+  --button-gradiance-right : #525252;  /* var(--button-gradiance-right) */
   --text1 : #a5b0a9; /* var(--text1) */
   --text2 : #abd6db; /* var(--text2) */
   --micro-text : #11998e; /* var(--micro-text) */
@@ -35,6 +37,8 @@
   --rgb-widget-strong-contour1 : 92, 32, 42; /* var(--rgb-widget-strong-contour1) */
   --rgb-widget-strong-contour2 : 55, 25, 33; /* var(--rgb-widget-strong-contour2) */
   --rgb-widget-strong-contour3: 99 186 194; /* var(--rgb-widget-strong-contour3) */
+  --rgb-button-gradiance-left : 36,36,36;  /* var(--rgb-button-gradiance-left) */
+  --rgb-button-gradiance-right : 82,82,82;  /* var(--rgb-button-gradiance-right) */
   --rgb-text1 : 165, 176, 169; /* var(--rgb-text1) */
   --rgb-text2 : 171, 214, 219; /* var(--rgb-text2) */
   --rgb-micro-text : 17, 153, 142; /* var(--rgb-micro-text) */
@@ -60,6 +64,8 @@ html[data-theme='whiteblue'] {
   --widget-background3 : #a1cac5; /* var(--widget-background3) */
   --widget-strong-contour1 : #58494c; /* var(--widget-strong-contour1) */
   --widget-strong-contour2 : #d85d7e; /* var(--widget-strong-contour2) */
+  --button-gradiance-left : #0f1785;  /* var(--button-gradiance-left) */
+  --button-gradiance-right : #606cdd;  /* var(--button-gradiance-right) */
   --text1 : #272727; /* var(--text1) */
   --text2 : #4c6062; /* var(--text2) */
   --micro-text : #11998e; /* var(--micro-text) */
@@ -79,6 +85,8 @@ html[data-theme='whiteblue'] {
   --rgb-widget-background3 : 161, 202, 197; /* var(--rgb-widget-background3) */
   --rgb-widget-strong-contour1 : 88, 73, 76; /* var(--rgb-widget-strong-contour1) */
   --rgb-widget-strong-contour2 : 216, 93, 126; /* var(--rgb-widget-strong-contour2) */
+  --rgb-button-gradiance-left : 15,23,133;  /* var(--rgb-button-gradiance-left) */
+  --rgb-button-gradiance-right : 96,108,221;  /* var(--rgb-button-gradiance-right) */
   --rgb-text1 : 39, 39, 39; /* var(--rgb-text1) */
   --rgb-text2 : 76, 96, 98; /* var(--rgb-text2) */
   --rgb-micro-text : 17, 153, 142; /* var(--rgb-micro-text) */
@@ -399,17 +407,17 @@ header > center > div > img{
 }
 
 .menu_btn_left_1{
-  background-image: url('img/icone/menu_left_icon_1.png') !important;
+  background-image: linear-gradient(to right, rgba(var(--rgb-button-gradiance-left), 0.5), rgba(var(--rgb-button-gradiance-right), 0.5) ), url('img/icone/menu_left_icon_1_alpha.png') !important;
   background-size: cover;
 }
 
 .menu_btn_left_2{
-  background-image: url('img/icone/menu_left_icon_2.png') !important;
+  background-image: linear-gradient(to right, rgba(var(--rgb-button-gradiance-left), 0.5), rgba(var(--rgb-button-gradiance-right), 0.5) ), url('img/icone/menu_left_icon_2_alpha.png') !important;
   background-size: cover;
 }
  
 .menu_btn_left_3{
-  background-image: url('img/icone/menu_left_icon_3.png') !important;
+  background-image: linear-gradient(to right, rgba(var(--rgb-button-gradiance-left), 0.5), rgba(var(--rgb-button-gradiance-right), 0.5) ), url('img/icone/menu_left_icon_3_alpha.png') !important;
   background-size: cover;
 }
 
@@ -573,17 +581,17 @@ header > center > div > img{
 }
 
 .menu_btn_right_1{
-  background-image: url('img/icone/menu_right_icon_1.png') !important;
+  background-image: linear-gradient(to left, rgba(var(--rgb-button-gradiance-left), 0.5), rgba(var(--rgb-button-gradiance-right), 0.5) ), url('img/icone/menu_right_icon_1_alpha.png') !important;
   background-size: cover;
 }
 
 .menu_btn_right_2{
-  background-image: url('img/icone/menu_right_icon_2.png') !important;
+  background-image: linear-gradient(to left, rgba(var(--rgb-button-gradiance-left), 0.5), rgba(var(--rgb-button-gradiance-right), 0.5) ), url('img/icone/menu_right_icon_2_alpha.png') !important;
   background-size: cover;
 }
 
 .menu_btn_right_3{
-  background-image: url('img/icone/menu_right_icon_3.png') !important;
+  background-image: linear-gradient(to left, rgba(var(--rgb-button-gradiance-left), 0.5), rgba(var(--rgb-button-gradiance-right), 0.5) ), url('img/icone/menu_right_icon_3_alpha.png') !important;
   background-size: cover;
 }
 
