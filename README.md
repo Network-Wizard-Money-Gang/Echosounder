@@ -62,25 +62,30 @@ python3 ouiinfo/collectoui.py
 sudo ./webchosounder.py
 ```
 
-## Développement & Architecture
+## Usage
 
-Echosounder est une application web relativement statique.
+Echosounder s'utilise à partir de menu déroulants.  
+Pour résumer, **le menu de gauche sert aux scans**, **le menu du haut sert aux règlages**, et **le menu de droite fournit les informations et manipule le graph**.  
 
-Il n'y a pas de base de donnée, juste un serveur Flask servant des fichiers statiques, une API permettant d'atteindre des fonctions de traceroute et de construction de paquet divers et coté front une foule de lib JS permettant de proposer une interface graphique agréable et intéressante.
 
-Au niveau du backend, plusieurs particularités intéressantes sont à noter : 
-    - un chemin d'API "Health" permet de rendre compte de l'état du backend et cherche à confirmer la présence et l'usage de l'ensemble des dépendances du backend, ainsi que l'état du réseau. C'est en quelque sorte, un miniset de tests unitaires lancés à chaque démarrage de page sur l'application. 
-    - Les fonctions de recherche sont divers et peuvent faire appels à pleins de dépendances pour le forgeage réseau come scapy, impacket, nmap ou encore DNSPython
-    - Il existe un sous-set de fonction qui servent à la résolution d'information hors-ligne, principalement les IP et les adresses MAC. Elles font appels à des fichier locaux qu'il faut télécharger à l'avance. Cela permet de travailler en hors-connexion sur un réseau et de bien visualiser ce qui est dessus. 
-    - une fonction d'API simple est fournit pour donner une SPA (Single Page Application) qui est le système de visualisation
+A partir des boutons de menus de gauche, on accède aux fonctions de scan :  
+![alt text](./doc/img/menugauche.png)  
+Et les trois boutons initiaux du menu de gauche servent respectivement à afficher :  
+ - les scans de réseaux locaux
+ - les scans de machines
+ - les scans permettant la découverte de réseaux distants
+  
+A partir des boutons du menu de droite, on accède aux fonctions de manipulation du graph et d'affichage des informations :  
+![alt text](./doc/img/menudroite.png)  
+Et les trois boutons initiaux du menu de droite servent respectivement à afficher :
+ - les info de noeuds
+ - les info de services
+ - les boutons de manipulation du graph (import, export, resize, note, etc...)
 
-Pour le front-end, également quelques points intéressants : 
-    - J'aime particulièrement les framework qui proposent une logique modulaire ou par composant. Historiquement, AngularJS 1 était mon favoris car il me permettait de séparer logiquement la plupart des fonctions du système. Je suis en train de progressivement tout basculer sur VueJS qui propose une logique d'applications séparés qui semble convenir et remplacer AngularJS dont la version 2 de Google ne me satisfait plus du tout.
-    - Tout est en VanillaJS avec de l'ESM également par confort personnel, je n'aime pas le typescript et les logiques de transpilation en JS que cela impose.
-    - Les applications vueJS séparent logiquement les éléments visuels dans la SPA. ce qui signifie que chaque menu est une application, le graph est une application et le système de notification est une application. Cela permet de répartir dans pleins de fichier différents chaque application dans la SPA et de déterminer rapidement où est exécuté quoi
-    - Pour la visualisation par graph, Cytoscape est utilisé, cette lib JS a la particularité de proposer une vue graph très maniable, mais permet également un export et un import simple en JSON. Ce qui permet de travailler sur de multiples graph de manière très propre
-    - Au niveau du CSS, il y a un gros travail effectué sur les palettes de couleur customisées, notamment avec une fonction permettant de choisir sa propre palette de couleur et de l'imposer sur l'ensemble de l'interface.
 
-Au niveau de l'organisation du projet : 
- - A peu près tout fonctionne sous la forme d'issue (feature, bug, choix d'architecture, documentation), il n'y a quasiment aucune automatisation pour le moment. Mais tout le monde est le bienvenu dans les issues
- - Il existe quelques issues épinglés qui sont des choix d'architecture importants. Ils constituent pour ainsi dire les fondamentaux de l'application sont régulièrement cités pour justifier ou modifier de futurs choix d'architectures (bien qu'avec le temps, ils tendent à devenir implicites...)
+Enfin, le menu du haut permet de configurer l'application : 
+![alt text](./doc/img/menutop.png)  
+Et les trois menu fournissent différents informations/config :  
+ - information d'état de l'application
+ - choix d'interface réseau actuelle
+ - choix de thème de l'application
