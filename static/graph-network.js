@@ -474,7 +474,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/scan_rdp_info',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible},
+        data : {'cible' : cible, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :
         mitt.emitter.emit('echo_toast_scan', "Réception scan RDP");
@@ -531,7 +531,7 @@ export default Vue.createApp({
         method : 'POST',
         url : '/json/services_fast_scan',
         headers: {'Content-Type': 'application/json'},
-        data : {'cible' : cible},
+        data : {'cible' : cible, 'interface' : this.store.interface},
       }).then((response) => {
         // si la requête passe :
         mitt.emitter.emit('echo_toast_scan', "Réception scan Services Fast");

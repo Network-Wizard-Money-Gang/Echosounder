@@ -387,8 +387,8 @@ def scan_snmp_netstat(target_ip, interface=default_interface):
 def scan_snmp_processes(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
-    arguments = 
-    nmap_scan_result = nm.scan(target_ip, arguments="-sU -p 161 --script snmp-processes")
+    arguments = "-sU -p 161 --script snmp-processes -e " + interface
+    nmap_scan_result = nm.scan(target_ip, arguments=arguments)
     global_list: List[dict] = []
     for i in nm.all_hosts():
         for protocol in nm[i].all_protocols():
@@ -404,7 +404,8 @@ def scan_snmp_processes(target_ip, interface=default_interface):
 def scan_ntp_info(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
-    nmap_scan_result = nm.scan(target_ip, arguments="-sU -p 123 --script ntp-info")
+    arguments = "-sU -p 123 --script ntp-info -e " + interface 
+    nmap_scan_result = nm.scan(target_ip, arguments=arguments)
     global_list: List[dict] = []
     for i in nm.all_hosts():
         for protocol in nm[i].all_protocols():
@@ -420,7 +421,8 @@ def scan_ntp_info(target_ip, interface=default_interface):
 def scan_rdp_info(target_ip, interface=default_interface):
     nm = nmap.PortScanner()  # instantiate nmap.PortScanner object
     nmap_scan_result: dict = {}
-    nmap_scan_result = nm.scan(target_ip, arguments="-p 3389 --script rdp-ntlm-info")
+    arguments = "-p 3389 --script rdp-ntlm-info -e " + interface
+    nmap_scan_result = nm.scan(target_ip, arguments=arguments)
     global_list: List[dict] = []
     for i in nm.all_hosts():
         for protocol in nm[i].all_protocols():
@@ -437,7 +439,7 @@ def data_creation_services_discovery(target_ip, port_start: int = 0, port_end: i
     """
     Service discovery using nmap
     """
-    return retrieve_services_from_scan(target_ip, port_start=port_start, port_end=port_end)
+    return retrieve_services_from_scan(target_ip, port_start=port_start, port_end=port_end, interface=interface)
 
 def traceroute_cidr_scan(targetcidr, interface=default_interface) -> List[List[dict]]:
     targethosts = ipaddress.IPv4Network(targetcidr)

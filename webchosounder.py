@@ -127,79 +127,79 @@ def scan_profiling():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        return jsonify(scan=echosounder.creation_data_nmap(request.json['cible']))
+        return jsonify(scan=echosounder.creation_data_nmap(request.json['cible'], interface=request.json['interface']))
 
 @app.route('/json/services_scan', methods=['POST'])
 def scan_services():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     elif("port_start" not in request.json):
-        return jsonify(scan=echosounder.data_creation_services_discovery(request.json['cible']))
+        return jsonify(scan=echosounder.data_creation_services_discovery(request.json['cible'], interface=request.json['interface']))
     else:
-        return jsonify(scan=echosounder.data_creation_services_discovery(request.json['cible'], port_start=request.json['port_start'], port_end=request.json['port_end']))
+        return jsonify(scan=echosounder.data_creation_services_discovery(request.json['cible'], port_start=request.json['port_start'], port_end=request.json['port_end'], interface=request.json['interface']))
 
 @app.route('/json/services_fast_scan', methods=['POST'])
 def scan_fast_services():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        return jsonify(scan=echosounder.retrieve_top_services(request.json['cible']))
+        return jsonify(scan=echosounder.retrieve_top_services(request.json['cible'], interface=request.json['interface']))
 
 @app.route('/json/reverse_ptr_scan', methods=['POST'])
 def scan_reverse_ptr():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        return jsonify(scan=echosounder.reverse_ptr_local_scan(request.json['cible']))
+        return jsonify(scan=echosounder.reverse_ptr_local_scan(request.json['cible'], interface=request.json['interface']))
 
 @app.route('/json/fingerpting_ssh_scan', methods=['POST'])
 def scan_fingerprint_ssh():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        return jsonify(scan=echosounder.fingerprint_ssh(request.json['cible']))
+        return jsonify(scan=echosounder.fingerprint_ssh(request.json['cible'], interface=request.json['interface']))
 
 @app.route('/json/scan_info_smb', methods=['POST'])
 def scan_info_smb():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        return jsonify(scan=echosounder.null_session_smb_enumeration(request.json['cible']))
+        return jsonify(scan=echosounder.null_session_smb_enumeration(request.json['cible'], interface=request.json['interface']))
 
 @app.route('/json/scan_snmp_info', methods=['POST'])
 def scan_snmp_info():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        return jsonify(scan=echosounder.scan_snmp_info(request.json['cible']))
+        return jsonify(scan=echosounder.scan_snmp_info(request.json['cible'], interface=request.json['interface']))
 
 @app.route('/json/scan_snmp_netstat', methods=['POST'])
 def scan_snmp_netstat():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        return jsonify(scan=echosounder.scan_snmp_netstat(request.json['cible']))
+        return jsonify(scan=echosounder.scan_snmp_netstat(request.json['cible'], interface=request.json['interface']))
 
 @app.route('/json/scan_snmp_processes', methods=['POST'])
 def scan_snmp_processes():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        return jsonify(scan=echosounder.scan_snmp_processes(request.json['cible']))
+        return jsonify(scan=echosounder.scan_snmp_processes(request.json['cible'], interface=request.json['interface']))
 
 @app.route('/json/scan_ntp', methods=['POST'])
 def scan_ntp_info():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        return jsonify(scan=echosounder.scan_ntp_info(request.json['cible']))
+        return jsonify(scan=echosounder.scan_ntp_info(request.json['cible'], interface=request.json['interface']))
 
 @app.route('/json/scan_rdp_info', methods=['POST'])
 def scan_rdp_info():
     if not if_contain_cible(request.json):
         return {'error': "malformed request"}
     else:
-        return jsonify(scan=echosounder.scan_rdp_info(request.json['cible']))
+        return jsonify(scan=echosounder.scan_rdp_info(request.json['cible'], interface=request.json['interface']))
 
 @app.route('/json/ip_to_as/<ip>', methods=['GET'])
 def ip_to_as(ip):
