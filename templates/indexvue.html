@@ -221,6 +221,11 @@
         <div class="container d-flex flex-wrap" v-if="store.nodesSelected.length > 0">
           <span v-for="i in store.nodesSelected" class="echo_ip_selected">{{"{{i}}"}} <i class="las la-window-close" @click="deleteIPSelected(i)"></i></span>
         </div>
+        <div class="container d-flex flex-wrap" v-else>
+          <span class="echo_ip_selected">
+            {{"{{store.machineCible}}"}}
+          </span>
+        </div>
         <!-- juste un bouton pour tout supprimer-->
         <div class="hvr-hollow echo_note_cross" @click="showDialogNote = false"><i class="las la-times"></i></div>
         <div class="container echo_menu_subtitle"></div>
@@ -232,7 +237,7 @@
         </div>
         <div class="container echo_menu_subtitle"></div>
         <div class="d-flex flex-wrap">
-          <div class="echo_button_scan hvr-hollow" @click="addNoteValidate()">Valider</div>
+          <div class="echo_button_scan hvr-hollow" @click="addNoteValidate(); showDialogNote = false">Valider</div>
         </div>
       </div>
     </div>

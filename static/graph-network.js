@@ -25,7 +25,9 @@ export default Vue.createApp({
     });
     this.cyto.on('box', 'node', (evt) => {
       if(evt.target.data('type') == 'IP') {
-        this.store.nodesSelected.push(evt.target.data('data_ip'));
+        if(!this.store.nodesSelected.includes(evt.target.data('data_ip'))) { // on s'assure qu'on ajoute pas les IP en double
+          this.store.nodesSelected.push(evt.target.data('data_ip'));
+        }
       }
     });
 
@@ -126,12 +128,16 @@ export default Vue.createApp({
             'text-halign': 'center',
             'text-wrap' : 'wrap',
             'font-size' : 8,
-            'text-wrap': 'wrap',
             'text-max-width' : 260,
             'text-overflow-wrap' : 'whitespace',
             'text-justification' : 'auto',
+            'text-background-shape' : 'round-rectangle',
+            'text-background-padding': '5px',
+            'text-background-opacity': 1,
+            'text-background-color' : this.rootColor.getPropertyValue('--fond-noeuds'),
             'width' : (node) => { return Math.min(260, node.data('label').length * 7) },
             'height' : (node) => { return (Math.floor(node.data('label').length/45) + 1) * 8 },
+            'background-opacity': 0,  // node invisible mais texte visible
             'z-index' : 5,
           },
         },
@@ -228,6 +234,13 @@ export default Vue.createApp({
             'target-arrow-color' : this.rootColor.getPropertyValue('--widget-strong-contour3'), 
             'width': 4, // épaisseur de l'edge sélectionné
             'opacity' : 0.8,
+          },
+        },
+        {
+          selector: 'edge[typelink = "notelink"]',
+          css: {
+            'target-arrow-shape': 'circle',
+            'width': 2, 
           },
         },
       ];
@@ -1059,6 +1072,7 @@ export default Vue.createApp({
             source : titre,
             target : target,
             type : 'notelink',
+            typelink : 'notelink',
           }
         });
       });
