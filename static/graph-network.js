@@ -551,7 +551,7 @@ export default Vue.createApp({
       let list_local_cidr = [
           "0.0.0.0/8", 
           "100.64.0.0/10",
-          "127.0.0.0/8", 
+          //"127.0.0.0/8", // l'adresse de localhost ne peut en théorie jamais se retrouver routé en dehors de la machine, donc inutile de le proposer en "découverte de réseaux locaux" 
           "169.254.0.0/16", 
           "192.0.0.0/24", 
           "192.0.2.0/24", 
@@ -861,11 +861,13 @@ export default Vue.createApp({
     // fonction de rendu du graph pour les scans plus orientés IP/services
     // fonction de création du graph à partir d'un scan trace
     createCytoTraceGraph : function(scan_data) {
+      console.log(scan_data);
       let nodes = [];
       let edges = [];
 
       // on ajoute les noeuds
       scan_data.scan.forEach((ipdata) => {
+
         let ip = ipdata[0];
         // on récupère le node déjà créé avec l'ip associé : 
         let node_exist = this.cyto.elements('node[data_ip = "' + ip + '"]');
