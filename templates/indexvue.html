@@ -32,7 +32,7 @@
           <img src="{{ url_for('static', filename='img/white_icon.png')}}"/>
           Echosounder
         </div>
-        <div class="rounded-pill header_config_button" @click="() => {menuConf = !menuConf; if(menuConf == false) { resetPanel() }}">
+        <div class="rounded-pill header_config_button" @click="() => {menuConf = !menuConf}">
           <i class="las la-sort-down"></i> Configuration
         </div>
       </center>

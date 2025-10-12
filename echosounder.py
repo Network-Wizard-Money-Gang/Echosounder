@@ -455,7 +455,7 @@ def traceroute_cidr_scan(targetcidr, interface=default_interface) -> List[List[d
 def traceroute_scan(target='142.250.75.238', interface=default_interface) -> List[dict]:
     as_retrieved = None
     list_return_ip = []
-    p, r = traceroute(target, iface=interface)
+    p, r = traceroute(target, iface=interface) #traceroute TCP
     if(target in p.get_trace().keys()):
         p = p.get_trace()[target]
         with open('asinfo/routeviews-prefix2as-latest.json', 'r') as listcidr:
@@ -506,4 +506,4 @@ def scan_dhcp_discover(target_cidr, interface=default_interface):
 
 if __name__ == "__main__":
     print("TEST")
-    print(scan_dhcp_discover1('192.168.1.0/24'))
+    print(scan_dhcp_discover('192.168.1.0/24'))
