@@ -242,6 +242,11 @@ header > center > div > img{
   color: var(--background-default);
 }
 
+.echo_menu_top_onglet_button_active {
+  background-color: var(--widget-background3);
+  color: var(--background-default);
+}
+
 .echo_menu_top_option_interface {
   background-color: var(--widget-background3);
   color: var(--background-default);

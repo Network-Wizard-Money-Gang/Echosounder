@@ -40,9 +40,9 @@
       <div class="d-flex flex-wrap echo_menu_top" v-bind:class="{'v-hide' : !menuConf}">
         <!-- onglets de menu paramètres -->
         <div class="d-flex justify-content-evenly echo_menu_top_onglets">
-          <div class="echo_menu_top_onglet_button" @click="() => {menuConfState = true; menuConfNetwork = false; menuConfTheme = false}">Status</div>
-          <div class="echo_menu_top_onglet_button" @click="() => {menuConfNetwork = true; menuConfState = false; menuConfTheme = false}">Réseau</div>
-          <div class="echo_menu_top_onglet_button" @click="() => {menuConfTheme = true; menuConfNetwork = false; menuConfState = false}">Thème</div>
+          <div class="echo_menu_top_onglet_button" @click="() => {menuConfState = true; menuConfNetwork = false; menuConfTheme = false}" :class="{echo_menu_top_onglet_button_active : menuConfState}">Status</div>
+          <div class="echo_menu_top_onglet_button" @click="() => {menuConfNetwork = true; menuConfState = false; menuConfTheme = false}" :class="{echo_menu_top_onglet_button_active : menuConfNetwork}">Réseau</div>
+          <div class="echo_menu_top_onglet_button" @click="() => {menuConfTheme = true; menuConfNetwork = false; menuConfState = false}" :class="{echo_menu_top_onglet_button_active : menuConfTheme}">Thème</div>
         </div>
         <!-- menus paramètres-->
         <div>
