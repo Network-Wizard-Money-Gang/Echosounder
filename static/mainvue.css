@@ -488,6 +488,23 @@ header > center > div > img{
   overflow-y: auto;
   max-height: 75vh;
 }
+/* dialog search node */
+
+.echo_search_node_form {
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 10px;
+}
+
+.echo_table_node > tbody > tr > th {
+  color: var(--text1);
+  font-family: Hack !important;
+}
+
+.echo_table_node > tbody > tr > td {
+  color: var(--text2);
+  font-family: Hack !important;
+}
 
 /* dialog add note */
 

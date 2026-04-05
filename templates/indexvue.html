@@ -18,7 +18,7 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/line-awesome.min.css')}}">
 
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='mainvue.css')}}"></link>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='mainvue.css')}}"></link>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/icone/favicon.png')}}"/>
 
   </head>
@@ -203,6 +203,7 @@
           <div class="container echo_menu_title">Manipulations du graph</div>
           <input class="echo_to_hide" type="file" id="echo_json_upload" name="file"/>
           <div class="echo_button_scan hvr-hollow" @click="checkAPI()"><i class="las la-tasks"></i>check API</div>
+          <div class="echo_button_scan hvr-hollow" @click="searchNodes()"><i class="las la-tasks"></i>search Node</div>
           <div class="echo_button_scan hvr-hollow" @click="addNote()"><i class="las la-comment"></i>add Note</div>
           <div class="echo_button_scan hvr-hollow" @click="exportGraph('png')"><i class="las la-download"></i>export PNG</div>
           <div class="echo_button_scan hvr-hollow" @click="exportGraph('jpg')"><i class="las la-download"></i>export JPG</div>
@@ -214,7 +215,49 @@
           <div class="echo_button_scan hvr-hollow" @click="actionGraph('delete_selection')"><i class="las la-trash-alt"></i>Supprimer Sélection</div>
         </div>
       </Transition>
-      
+
+      <!-- dialog search node on graph-->
+      <div class="flex flex-wrap echo_dialog_node" v-if="showDialogSearchNode">
+        <div class="container echo_menu_title">Recherche de noeuds dans le graph</div>
+        <!-- juste un bouton pour tout supprimer-->
+        <div class="hvr-hollow echo_note_cross" @click="showDialogSearchNode = false"><i class="las la-times"></i></div>
+        <!-- formulaire de recherche -->
+        <div class="echo_search_node_form row">
+          <div class="col">
+            <label>Recherche : </label>
+          </div>
+          <div class="col-8">
+            <input type="texte" class="form-control" placeholder="Recherche texte de nodes" @keyup.enter="searchNodesValidate(searchNodeInput)" v-model="searchNodeInput">
+          </div>
+          <div class="col">
+            <div class="echo_button_scan hvr-hollow" @click="searchNodesValidate(searchNodeInput)">Valider</div>
+          </div>
+        </div>
+        <div class="container echo_menu_subtitle"></div>
+        <!-- rendu de liste de noeuds-->
+        <div>
+          <table class="table table-striped echo_table_node">
+            <tr class="table-active">
+              <th scope="col">id</th>
+              <th scope="col">data</th>
+            </tr>
+            <tr v-for="item in searchNodeListResult">
+              <td>{{"{{item?.id}}"}}</td>
+              <td>{{"{{item?.node_data}}"}}</td>
+            </tr>
+          </table>
+        </div>
+        <!-- bouton de reset -->
+        <div class="container echo_menu_subtitle"></div>
+        <div class="echo_search_node_form row">
+          <div class="col-10"></div>
+          <div class="col">
+            <div class="echo_button_scan hvr-hollow" @click="removeSearchClass()">Reset</div>
+          </div>
+        </div>
+        
+      </div>
+
       <!-- dialog note on graph -->
       <div class="flex flex-wrap echo_dialog_node" v-if="showDialogNote">
         <div class="container echo_menu_title">Ajout de commentaire</div>

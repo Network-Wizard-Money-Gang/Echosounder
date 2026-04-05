@@ -243,6 +243,18 @@ export default Vue.createApp({
             'width': 2, 
           },
         },
+        {
+          selector: 'node.searched',
+          css: {
+            'border-width' : 2,
+            'border-style' : 'dashed',
+            'border-color' : this.rootColor.getPropertyValue('--widget-strong-contour2'), 
+            'border-position' : 'outside',
+            'ghost' : 'yes',
+            "ghost-offset-y": 1,
+            'ghost-opacity': 0.4,
+          }
+        },
       ];
       this.cyto.style(this.styles);
     },
@@ -1281,11 +1293,39 @@ export default Vue.createApp({
         this.store.leftPanelMenuApp.setIPListScan(list_ip)
       }
     },
+    // fonction de listing des noeuds du graph 
+    searchGraphNodes : function(searchtext) {
+      let matchingNodes = [];
+      this.cyto.batch(() => {
+        // on retire d'éventuels class "searched"
+        this.cyto.elements().removeClass('searched');
+
+        matchingNodes = this.cyto.nodes().filter(node => {
+          const data = node.data();
+
+          return JSON.stringify(data).toLowerCase().includes(searchtext.toLowerCase());
+        });
+
+        // on ajoute la class "searched" à la sélection
+        matchingNodes.addClass('searched')
+
+      });
+      matchingNodes = matchingNodes.map(node => ({
+        id: node.id(),
+        node_data : node.data('data'),
+      }));
+      console.log(matchingNodes);
+      return matchingNodes;
+    },
+    // fonction de suppression de class searched 
+    removeSearchClass : function() {
+      this.cyto.elements().removeClass('searched');
+    },
     // fonction de gestion d'évènement clavier
     keyboardEventHandler : function(key) {
       if(key.keyCode === 46 | key.keyCode === 8) { // touche SUPPR/DEL 
         this.cyto.elements('node:selected').remove(); 
       }
-    }
+    },
   },
 });

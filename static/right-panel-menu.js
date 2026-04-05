@@ -16,6 +16,10 @@ export default Vue.createApp({
         showMenu3 : false,
         // variable d'affichage du menu d'ajout de note
         showDialogNote : false,
+        // variable d'affichage du menu de recherche
+        showDialogSearchNode : false,
+        searchNodeInput : "",
+        searchNodeListResult : [],
         // variables de notes
         titreNote : "",
         texteNote : "",
@@ -45,6 +49,21 @@ export default Vue.createApp({
       checkAPI : function() {
         this.store.EchoSounderApp.getHealth();
       },
+      // fonction d'affichage d'une modale de recherche
+      searchNodes : function() {
+        this.showDialogSearchNode = !this.showDialogSearchNode;
+      },
+      // fonction de recherche et de rendu de node recherchés
+      searchNodesValidate : function(text) {
+        console.log(text);
+        this.searchNodeListResult = this.store.graphNetworkApp.searchGraphNodes(text);
+        //console.log(this.searchNodeListResult);
+      },
+      // reset class cytoscape select
+      removeSearchClass : function() {
+        this.store.graphNetworkApp.removeSearchClass();
+      },
+
       addNote : function() {
         this.showDialogNote = !this.showDialogNote;
       },
@@ -91,9 +110,13 @@ export default Vue.createApp({
       },
       // fonction de reset du panel : 
       resetPanel : function() {
+        // retirage de menu de droite
         this.showMenu1 = false;
         this.showMenu2 = false;
         this.showMenu3 = false;
+        // retirage dialog de droite
+        this.showDialogNote = false;
+        this.showDialogSearchNode = false;
       }
     },
 })
